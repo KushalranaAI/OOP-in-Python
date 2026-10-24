@@ -1,0 +1,161 @@
+{
+ "title": "Python: reference counting decides when an object dies",
+ "lang": "python",
+ "code": "import sys\n\nclass Resource:\n    def __init__(self, name):\n        self.name = name\n        print(f\"open {name}\")\n\n    def __del__(self):\n        print(f\"close {self.name}\")\n\na = Resource(\"A\")\nb = a\ndel a\nprint(\"still alive, references:\", sys.getrefcount(b) - 1)\nb = None\nprint(\"done\")\n",
+ "steps": [
+  {
+   "line": 11,
+   "note": "The object is created and `a` refers to it: **reference count 1**.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "a",
+       "ref": "r"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      },
+      {
+       "name": "(reference count)",
+       "value": "1",
+       "changed": true
+      }
+     ]
+    }
+   ],
+   "out": "open A"
+  },
+  {
+   "line": 12,
+   "note": "`b = a` copies the *reference*, not the object: count 2.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "a",
+       "ref": "r"
+      },
+      {
+       "name": "b",
+       "ref": "r"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      },
+      {
+       "name": "(reference count)",
+       "value": "2",
+       "changed": true
+      }
+     ]
+    }
+   ],
+   "out": "open A"
+  },
+  {
+   "line": 13,
+   "note": "`del a` deletes the **name**, not the object. Count drops to 1, and the object lives on through `b`.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "b",
+       "ref": "r"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      },
+      {
+       "name": "(reference count)",
+       "value": "1",
+       "changed": true
+      }
+     ]
+    }
+   ],
+   "out": "open A\nstill alive, references: 1"
+  },
+  {
+   "line": 15,
+   "note": "`b = None`: the last reference is gone, count 0. CPython frees the object **immediately** and calls `__del__`. (For cycles, a separate garbage collector steps in later. Use `with` blocks, not `__del__`, for files and connections.)",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "b",
+       "value": "None"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      },
+      {
+       "name": "(reference count)",
+       "value": "0",
+       "changed": true
+      }
+     ],
+     "freed": true
+    }
+   ],
+   "out": "open A\nstill alive, references: 1\nclose A"
+  },
+  {
+   "line": 16,
+   "note": "Done.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "b",
+       "value": "None"
+      }
+     ]
+    }
+   ],
+   "heap": [],
+   "out": "open A\nstill alive, references: 1\nclose A\ndone"
+  }
+ ]
+}

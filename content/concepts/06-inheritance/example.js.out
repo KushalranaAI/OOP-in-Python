@@ -1,0 +1,7 @@
+Generic says ...
+Rex says Woof (a beagle)
+Bit says Yip (a corgi)
+prototype chain: Puppy → Dog → Animal → Object
+static methods are inherited: Static says Woof (a mixed)
+instanceof Animal: true
+this before super(): ReferenceError

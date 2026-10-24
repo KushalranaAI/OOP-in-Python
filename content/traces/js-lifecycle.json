@@ -1,0 +1,155 @@
+{
+ "title": "JavaScript: objects live while they are reachable",
+ "lang": "javascript",
+ "code": "class Resource {\n  constructor(name) {\n    this.name = name;\n  }\n}\n\nlet a = new Resource(\"A\");\nlet b = a;\na = null;\nconsole.log(b.name);    // still reachable through b\nb = null;               // unreachable now: the garbage collector may free it later\nconsole.log(\"done\");\n",
+ "steps": [
+  {
+   "line": 7,
+   "note": "`a` refers to the new object.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "a",
+       "ref": "r"
+      },
+      {
+       "name": "b",
+       "value": "<uninitialised>"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 8,
+   "note": "`b = a` - two references to one object.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "a",
+       "ref": "r"
+      },
+      {
+       "name": "b",
+       "ref": "r"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 10,
+   "note": "`a = null` only changes the variable. The object is still **reachable** through `b`.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "a",
+       "value": "null"
+      },
+      {
+       "name": "b",
+       "ref": "r"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      }
+     ]
+    }
+   ],
+   "out": "A"
+  },
+  {
+   "line": 11,
+   "note": "Now nothing reaches the object. The **garbage collector** will reclaim it *at some point*. JS has no destructors and no guarantee of *when*. Clean up explicitly (`close()`, `try/finally`) for files and sockets.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "a",
+       "value": "null"
+      },
+      {
+       "name": "b",
+       "value": "null"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "r",
+     "label": "Resource object - unreachable",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"A\""
+      }
+     ],
+     "freed": true
+    }
+   ],
+   "out": "A"
+  },
+  {
+   "line": 12,
+   "note": "Python frees immediately at count 0, C++ at the closing brace, JavaScript whenever the GC runs.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "a",
+       "value": "null"
+      },
+      {
+       "name": "b",
+       "value": "null"
+      }
+     ]
+    }
+   ],
+   "heap": [],
+   "out": "A\ndone"
+  }
+ ]
+}

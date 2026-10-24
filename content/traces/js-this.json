@@ -1,0 +1,297 @@
+{
+ "title": "JavaScript: this depends on HOW you call",
+ "lang": "javascript",
+ "code": "class Counter {\n  static total = 0;\n  count = 0;\n  increment() {\n    this.count++;\n    Counter.total++;\n  }\n}\n\nconst a = new Counter();\na.increment();\nconst inc = a.increment;          // take the method off the object\ntry { inc(); } catch (e) { console.log(e.message); }\nconst bound = a.increment.bind(a);\nbound();\nconsole.log(a.count, Counter.total);\n",
+ "steps": [
+  {
+   "line": 10,
+   "note": "`count = 0` is a **class field**: every object gets its own. `static total` lives on the class itself.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "Counter (class)",
+     "fields": [
+      {
+       "name": "total",
+       "value": "0",
+       "changed": false
+      },
+      {
+       "name": "prototype",
+       "value": "{ increment }"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "0",
+       "changed": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 5,
+   "note": "`a.increment()` - called *through* `a`, so **`this` is a**.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      }
+     ]
+    },
+    {
+     "name": "increment",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "a"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "Counter (class)",
+     "fields": [
+      {
+       "name": "total",
+       "value": "1",
+       "changed": true
+      },
+      {
+       "name": "prototype",
+       "value": "{ increment }"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "1",
+       "changed": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 13,
+   "note": "`inc()` - the same function, but called **without an object before the dot**. In classes (strict mode) `this` is then `undefined`, so `this.count` throws.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "inc",
+       "value": "<function increment>"
+      }
+     ]
+    },
+    {
+     "name": "increment",
+     "vars": [
+      {
+       "name": "this",
+       "value": "undefined"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "Counter (class)",
+     "fields": [
+      {
+       "name": "total",
+       "value": "1",
+       "changed": false
+      },
+      {
+       "name": "prototype",
+       "value": "{ increment }"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "1",
+       "changed": false
+      }
+     ]
+    }
+   ],
+   "out": "Cannot read properties of undefined (reading 'count')"
+  },
+  {
+   "line": 15,
+   "note": "`bind(a)` makes a new function whose `this` is fixed to `a`. (Arrow functions also capture `this` from where they're written.)",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "inc",
+       "value": "<function>"
+      },
+      {
+       "name": "bound",
+       "value": "<bound increment>"
+      }
+     ]
+    },
+    {
+     "name": "increment",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "a"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "Counter (class)",
+     "fields": [
+      {
+       "name": "total",
+       "value": "2",
+       "changed": true
+      },
+      {
+       "name": "prototype",
+       "value": "{ increment }"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "2",
+       "changed": true
+      }
+     ]
+    }
+   ],
+   "out": "Cannot read properties of undefined (reading 'count')"
+  },
+  {
+   "line": 16,
+   "note": "In Python `self` is an explicit parameter; in C++ `this` is fixed by the compiler; in JavaScript `this` is decided **at call time**.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "inc",
+       "value": "<function>"
+      },
+      {
+       "name": "bound",
+       "value": "<bound increment>"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "Counter (class)",
+     "fields": [
+      {
+       "name": "total",
+       "value": "2",
+       "changed": false
+      },
+      {
+       "name": "prototype",
+       "value": "{ increment }"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "2",
+       "changed": false
+      }
+     ]
+    }
+   ],
+   "out": "Cannot read properties of undefined (reading 'count')\n2 2"
+  }
+ ]
+}

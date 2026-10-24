@@ -1,0 +1,7 @@
+a = 21.5 °C = 70.7 °F
+b = 100.0 °C
+freezing at -3? true
+readings taken: 2
+detached call fails: TypeError
+bound call works: 21.5 °C
+arrow wrapper works: 21.5 °C

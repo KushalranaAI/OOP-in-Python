@@ -1,0 +1,12 @@
+building:
+  Animal part of Generic built
+  Animal part of Rex built
+  Dog part built
+  Animal part of Bit built
+  Dog part built
+describing:
+  Generic says ...
+  Rex says Woof (a beagle)
+  Bit says Yip (a corgi)
+a Puppy is-a Dog: Yip
+sizeof(Animal)=40 sizeof(Dog)=72 (Dog contains an Animal + breed_)

@@ -1,0 +1,22 @@
+{# A runnable, editable code box. #}
+{% macro runner(lang, code, expected="", filename=None, height=None) -%}
+<div class="runner" data-runner="{{ lang }}">
+  <div class="runner-bar">
+    <span class="file">{{ LANGS[lang].icon }} {{ filename or ('main' ~ LANGS[lang].ext) }}</span>
+    <span class="spacer"></span>
+    <button class="btn small ghost" data-reset title="Undo your edits">↺ Reset</button>
+    <button class="btn small primary" data-run title="Ctrl/⌘ + Enter">▶ Run</button>
+  </div>
+  <div class="editor" {% if height %}style="height:{{ height }}"{% endif %}>
+    <pre aria-hidden="true"><code class="language-{{ lang }}"></code></pre>
+    <textarea spellcheck="false" autocapitalize="off" autocomplete="off" data-original="{{ code }}">{{ code }}</textarea>
+  </div>
+  <pre class="output" hidden></pre>
+  {% if expected %}<details class="expected"><summary>Expected output</summary><pre>{{ expected }}</pre></details>{% endif %}
+</div>
+{%- endmacro %}
+
+{# Three versions of something, shown according to the language switch. #}
+{% macro lang_panels() -%}
+<div class="lang-panels">{{ caller() }}</div>
+{%- endmacro %}

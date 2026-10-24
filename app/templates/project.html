@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import runner with context %}
+{% block title %}{{ p.title }}{% endblock %}
+{% block content %}
+<p class="crumbs">③ Projects · {{ p.level }}</p>
+<h1>{{ p.icon }} {{ p.title }}</h1>
+<p class="lead">{{ p.summary }}</p>
+<div class="pills">{% for slug in p.concepts %}{% if slug in concept_titles %}<a class="pill accent" href="{{ url_for('concept', slug=slug) }}">{{ concept_titles[slug].icon }} {{ concept_titles[slug].title }}</a>{% endif %}{% endfor %}</div>
+
+<div class="grid-2">
+  <div class="card"><h4>📋 Requirements</h4><ul>{% for r in p.requirements %}<li>{{ r }}</li>{% endfor %}</ul></div>
+  <div class="card"><h4>🧩 Design</h4>{{ p.design | mermaid }}</div>
+</div>
+
+<h2>Build it step by step</h2>
+<p class="muted">Each step shows the code for the language selected at the top (or all three with ⇄ All).</p>
+<ol class="steps">
+  {% for step in p.steps %}
+  <li>
+    <h3>{{ step.title }}</h3>
+    <div class="prose">{{ step.body | md }}</div>
+    {% if step.code %}<div class="lang-panels">{% for lang, code in step.code.items() %}
+      <div class="lp" data-l="{{ lang }}"><pre><code class="language-{{ {'python':'py','cpp':'c++','javascript':'js'}[lang] }}">{{ code }}</code></pre></div>{% endfor %}</div>{% endif %}
+  </li>
+  {% endfor %}
+</ol>
+
+<h2 id="full">The complete program</h2>
+<div class="lang-panels">
+  {% for lang, impl in p.implementations.items() %}
+  <div class="lp" data-l="{{ lang }}"><h3 class="lp-title" style="--lc: {{ LANGS[lang].color }}">{{ LANGS[lang].icon }} {{ LANGS[lang].name }}</h3>
+    {{ runner(lang, impl.code, impl.expected, impl.path.split('/')[-1], height='520px') }}</div>
+  {% endfor %}
+</div>
+<article class="prose">{{ p.body | md }}</article>
+<div class="row" style="margin-top:28px"><label class="btn"><input type="checkbox" data-complete="p:{{ p.slug }}"> Mark project as done</label></div>
+{% endblock %}

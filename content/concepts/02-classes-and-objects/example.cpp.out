@@ -1,0 +1,4 @@
+Rex says woof | Pip says woof
+rex.age = 4, copy.age = 10
+sizeof(Dog) = 40 bytes (methods take no space)
+&alias == &rex: true

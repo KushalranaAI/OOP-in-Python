@@ -1,0 +1,6 @@
+Rex says woof | Pip says woof
+attributes of rex: {'name': 'Rex', 'age': 3}
+class of rex: Dog | isinstance: True
+alias is rex: True | pip is rex: False
+rex.age is now 4
+shared class attribute: True

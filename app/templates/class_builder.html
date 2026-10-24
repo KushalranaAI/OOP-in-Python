@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Class builder{% endblock %}
+{% block content %}
+<h1>🏗️ Class builder</h1>
+<p class="lead">Design a class with a parent, fields and methods, and watch the same design appear as Python, C++ and JavaScript code, with a class diagram.</p>
+<div class="widget" data-widget="builder" data-config='{"full": true}'></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='widgets/builder.js') }}"></script>{% endblock %}

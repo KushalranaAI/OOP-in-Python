@@ -1,0 +1,8 @@
+  receipt: charged 50.0 (was 50.0)
+Regular → 50.0
+  receipt: charged 40.0 (was 50.0)
+PercentOff → 40.0
+audit log: ['paid 50.0', 'paid 40.0']
+factory made a Circle with area 12.57
+factory made a Square with area 4
+error: unknown shape 'hexagon'; known: ['circle', 'square']

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ LANGS[lang].name }} basics{% endblock %}
+{% block content %}
+<p class="crumbs">① Basics</p>
+<h1>{{ LANGS[lang].icon }} {{ LANGS[lang].name }} basics</h1>
+<p class="lead">Everything the OOP chapters assume you know in {{ LANGS[lang].name }}. Every complete program has a ▶ Run button.</p>
+<ol class="lesson-list">
+  {% for l in lessons %}<li><a class="card" href="{{ url_for('lesson', lang=lang, slug=l.slug) }}"><b>{{ l.title }}</b><p>{{ l.summary }}</p></a></li>{% endfor %}
+</ol>
+<p class="muted">Other tracks: {% for other, info in LANGS.items() if other != lang %}<a href="{{ url_for('track', lang=other) }}">{{ info.icon }} {{ info.name }}</a>{{ ' · ' if not loop.last }}{% endfor %}</p>
+{% endblock %}

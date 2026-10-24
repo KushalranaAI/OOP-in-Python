@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Compare{% endblock %}
+{% block content %}
+<h1>⇄ Python vs C++ vs JavaScript</h1>
+<p class="lead">Every comparison row from every concept, in one cheat sheet. Click a concept name to learn more.</p>
+<div class="table-wrap"><table class="compare">
+  <tr><th>Concept</th><th>Aspect</th>{% for lang, info in LANGS.items() %}<th>{{ info.icon }} {{ info.name }}</th>{% endfor %}</tr>
+  {% for c, row in rows %}
+  <tr>{% if loop.first or rows[loop.index0 - 1][0].slug != c.slug %}<td rowspan="{{ c.compare|length }}"><a href="{{ url_for('concept', slug=c.slug) }}">{{ c.icon }} {{ c.title }}</a></td>{% endif %}
+    <th>{{ row[0] }}</th>{% for cell in row[1:] %}<td>{{ cell | md }}</td>{% endfor %}</tr>
+  {% endfor %}
+</table></div>
+{% endblock %}

@@ -1,0 +1,5 @@
+Shape: Can't instantiate abstract class Shape without an implementation for abstract method 'area'
+HalfDone: Can't instantiate abstract class HalfDone without an implementation for abstract method 'area'
+Square with area 9.00
+  email: order placed: book
+the fake recorded: ['order placed: pen']

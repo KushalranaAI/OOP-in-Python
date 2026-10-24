@@ -1,0 +1,15 @@
+day 1
+  [borrow] Ada borrowed 'Clean Code', due day 22
+  [borrow] Ada borrowed 'The Matrix', due day 8
+  refused: Ada reached the Standard limit of 2
+  refused: 'Byte' is reference-only
+  [borrow] Linus borrowed 'Design Patterns', due day 22
+  refused: 'Clean Code' is already on loan
+day 12
+  [return] Ada returned 'The Matrix', 4 days late, fine 4.00
+day 30
+  [return] Linus returned 'Design Patterns', 8 days late, fine 1.00
+search 'design': [B2] Design Patterns (1994, Book)
+search 'martin': [B1] Clean Code (2008, Book)
+search 'matrix': [D1] The Matrix (1999, Dvd)
+overdue: 'Clean Code' (Ada), fine so far 2.00

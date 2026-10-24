@@ -1,0 +1,13 @@
+skipped 'triangle 1 2 8': sides 1, 2, 8 can't form a triangle
+skipped 'hexagon 2': unknown shape 'hexagon'
+Shape itself is abstract
+scaled square: Square    area    25.00   perimeter   20.00
+is a Square a Rectangle? True
+
+5 shapes, smallest first:
+  Triangle  area     6.00   perimeter   12.00
+  Square    area     6.25   perimeter   10.00
+  Circle    area     7.07   perimeter    9.42
+  Rectangle area    12.00   perimeter   14.00
+  Square    area    25.00   perimeter   20.00
+total area 56.32, largest is the Square

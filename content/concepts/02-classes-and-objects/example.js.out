@@ -1,0 +1,6 @@
+Rex says woof | Pip says woof
+own properties: [ 'name', 'age' ]
+typeof Dog: function | instanceof: true
+bark is shared: true | own? false
+rex.age is now 4
+prototype link: true

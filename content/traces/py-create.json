@@ -1,0 +1,462 @@
+{
+ "title": "Python: what happens in Dog(\"Rex\", 3)",
+ "lang": "python",
+ "code": "class Dog:\n    species = \"Canis familiaris\"\n\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\n    def bark(self):\n        return f\"{self.name} says woof\"\n\nrex = Dog(\"Rex\", 3)\nprint(rex.bark())\n",
+ "steps": [
+  {
+   "line": 1,
+   "note": "`class` is a **statement**. Python runs the body and builds a **class object** - itself an object in memory - then binds the name `Dog` to it.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    }
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Calling the class runs two steps. First `Dog.__new__(Dog)` **allocates an empty object** whose `__class__` points to `Dog`.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 4,
+   "note": "Then `Dog.__init__(obj, \"Rex\", 3)` runs with the new object passed in as **self**. `__init__` doesn't create the object - it *initialises* one that already exists.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      }
+     ]
+    },
+    {
+     "name": "__init__",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "o1"
+      },
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 5,
+   "note": "`self.name = name` adds an attribute to the object's own `__dict__`.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      }
+     ]
+    },
+    {
+     "name": "__init__",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "o1"
+      },
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\"",
+       "changed": true
+      }
+     ],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 6,
+   "note": "Same for `age`. Attributes live in the **object**; methods live in the **class**.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      }
+     ]
+    },
+    {
+     "name": "__init__",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "o1"
+      },
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3",
+       "changed": true
+      }
+     ],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 11,
+   "note": "`__init__` returns, its frame disappears, and the name `rex` is bound to the object. A variable in Python is a **name that refers to** an object.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "ref": "o1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 9,
+   "note": "`rex.bark()` - `bark` isn't in the object's `__dict__`, so Python looks in its class and finds `Dog.bark`. The call becomes `Dog.bark(rex)`, so **self is rex**.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "ref": "o1"
+      }
+     ]
+    },
+    {
+     "name": "bark",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "o1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 12,
+   "note": "The returned string is printed. Done: one class object, one instance, two names.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "ref": "o1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "class Dog",
+     "fields": [
+      {
+       "name": "species",
+       "value": "\"Canis familiaris\""
+      },
+      {
+       "name": "__init__",
+       "value": "<function>"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "o1",
+     "label": "Dog object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ],
+     "proto": "Dog",
+     "protoLabel": "__class__"
+    }
+   ],
+   "out": "Rex says woof"
+  }
+ ],
+ "stackLabel": "Frames (names)",
+ "heapLabel": "Objects"
+}

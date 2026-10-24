@@ -1,0 +1,7 @@
+Circle     area = 3.142
+Rectangle  area = 6.000
+Hexagon    area = 2.598
+total: 11.740
+toString dispatch: Circle(area=12.57)
+Lazy must implement area()
+operators are polymorphic too: 3 ab [ 1, 2 ]

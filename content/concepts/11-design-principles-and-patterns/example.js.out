@@ -1,0 +1,9 @@
+  receipt: charged 50 (was 50)
+Regular → 50
+  receipt: charged 40 (was 50)
+PercentOff → 40
+audit log: [ 'paid 50', 'paid 40', 'paid 10' ] (receipts unsubscribed before the last payment)
+factory made a Circle with area 12.57
+factory made a Square with area 4
+error: unknown shape 'hexagon'; known: circle,square
+frozen value object: true

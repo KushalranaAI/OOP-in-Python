@@ -1,0 +1,431 @@
+{
+ "title": "Python: self, instance attributes and class attributes",
+ "lang": "python",
+ "code": "class Counter:\n    total = 0                  # class attribute: one, shared\n\n    def __init__(self):\n        self.count = 0         # instance attribute: one per object\n\n    def increment(self):\n        self.count += 1\n        Counter.total += 1\n\na = Counter()\nb = Counter()\na.increment()\na.increment()\nb.increment()\nprint(a.count, b.count, Counter.total)\n",
+ "steps": [
+  {
+   "line": 12,
+   "note": "Two objects, each with its **own** `count`. There is only **one** `total`, stored on the class.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "b",
+       "ref": "b"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "class Counter",
+     "fields": [
+      {
+       "name": "total",
+       "value": "0"
+      },
+      {
+       "name": "increment",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "0",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    },
+    {
+     "id": "b",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "0",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 8,
+   "note": "`a.increment()` is really `Counter.increment(a)`: **self is a**. `self.count += 1` changes a's own attribute.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "b",
+       "ref": "b"
+      }
+     ]
+    },
+    {
+     "name": "increment",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "a"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "class Counter",
+     "fields": [
+      {
+       "name": "total",
+       "value": "0"
+      },
+      {
+       "name": "increment",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "1",
+       "changed": true
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    },
+    {
+     "id": "b",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "0",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 9,
+   "note": "`Counter.total += 1` changes the **class** attribute, which every object sees.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "b",
+       "ref": "b"
+      }
+     ]
+    },
+    {
+     "name": "increment",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "a"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "class Counter",
+     "fields": [
+      {
+       "name": "total",
+       "value": "1"
+      },
+      {
+       "name": "increment",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "1",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    },
+    {
+     "id": "b",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "0",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 14,
+   "note": "Second call on `a`: self is a again.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "b",
+       "ref": "b"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "class Counter",
+     "fields": [
+      {
+       "name": "total",
+       "value": "2"
+      },
+      {
+       "name": "increment",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "2",
+       "changed": true
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    },
+    {
+     "id": "b",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "0",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 8,
+   "note": "`b.increment()` - same method, but now **self is b**. That's how one function serves every object.",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "b",
+       "ref": "b"
+      }
+     ]
+    },
+    {
+     "name": "increment",
+     "vars": [
+      {
+       "name": "self",
+       "ref": "b"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "class Counter",
+     "fields": [
+      {
+       "name": "total",
+       "value": "3"
+      },
+      {
+       "name": "increment",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "2",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    },
+    {
+     "id": "b",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "1",
+       "changed": true
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    }
+   ]
+  },
+  {
+   "line": 16,
+   "note": "Result: per-object counts 2 and 1, shared total 3. (Pitfall: writing `self.total += 1` would create a *new instance attribute* instead of changing the shared one!)",
+   "frames": [
+    {
+     "name": "global frame",
+     "vars": [
+      {
+       "name": "Counter",
+       "ref": "C"
+      },
+      {
+       "name": "a",
+       "ref": "a"
+      },
+      {
+       "name": "b",
+       "ref": "b"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "C",
+     "label": "class Counter",
+     "fields": [
+      {
+       "name": "total",
+       "value": "3"
+      },
+      {
+       "name": "increment",
+       "value": "<function>"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "a",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "2",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    },
+    {
+     "id": "b",
+     "label": "Counter object",
+     "fields": [
+      {
+       "name": "count",
+       "value": "1",
+       "changed": false
+      }
+     ],
+     "proto": "C",
+     "protoLabel": "__class__"
+    }
+   ],
+   "out": "2 1 3"
+  }
+ ]
+}
