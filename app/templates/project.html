@@ -1,23 +1,53 @@
 {% extends "base.html" %}
-{% from "_macros.html" import runner with context %}
+{% from "_macros.html" import runner, prevnext as prevnext_nav, complete_button, crumb with context %}
+{% from "_icons.html" import icon, ring, lang_badge with context %}
 {% block title %}{{ p.title }}{% endblock %}
+{% block page_id %}p:{{ p.slug }}{% endblock %}
+{% block crumbs %}{{ crumb("Projects", url_for('projects_index'), first=True) }}{{ crumb(p.title) }}{% endblock %}
 {% block content %}
-<p class="crumbs">③ Projects · {{ p.level }}</p>
-<h1>{{ p.icon }} {{ p.title }}</h1>
-<p class="lead">{{ p.summary }}</p>
-<div class="pills">{% for slug in p.concepts %}{% if slug in concept_titles %}<a class="pill accent" href="{{ url_for('concept', slug=slug) }}">{{ concept_titles[slug].icon }} {{ concept_titles[slug].title }}</a>{% endif %}{% endfor %}</div>
+{% set info = (course|selectattr("id", "equalto", "p:" ~ p.slug)|first) %}
+{% set step_ids = [] %}{% for s in p.steps %}{% set _ = step_ids.append('s:' ~ p.slug ~ '/' ~ loop.index) %}{% endfor %}
+{% set ns = namespace(i=0) %}{% for x in nav_projects %}{% if x.slug == p.slug %}{% set ns.i = loop.index0 %}{% endif %}{% endfor %}
+{% set prev = nav_projects[ns.i - 1] if ns.i > 0 else None %}
+{% set next = nav_projects[ns.i + 1] if ns.i + 1 < nav_projects|length else None %}
 
-<div class="grid-2">
-  <div class="card"><h4>📋 Requirements</h4><ul>{% for r in p.requirements %}<li>{{ r }}</li>{% endfor %}</ul></div>
-  <div class="card"><h4>🧩 Design</h4>{{ p.design | mermaid }}</div>
+<header class="page-head with-ring">
+  <div>
+    <span class="eyebrow">{{ icon("rocket", 14) }} Project {{ p.order }} of {{ nav_projects|length }}</span>
+    <h1>{{ p.icon }} {{ p.title }}</h1>
+    <p class="lead">{{ p.summary }}</p>
+    <div class="meta-row">
+      <span class="pill {{ p.level|lower }}">{{ p.level }}</span>
+      <span class="pill">{{ icon("list", 13) }} {{ p.steps|length }} steps</span>
+      <span class="pill">{{ icon("clock", 13) }} ~{{ info.minutes }} min</span>
+      {% for lang in p.implementations %}<span class="pill">{{ lang_badge(lang) }}</span>{% endfor %}
+    </div>
+  </div>
+  <div class="section-progress card">
+    {% call ring(step_ids, 64, 6) %}<span class="ring-big"><span data-pct>0</span><small>%</small></span>{% endcall %}
+    <div><b data-count='{{ step_ids|tojson|forceescape }}'></b><div class="muted small">steps built</div></div>
+  </div>
+</header>
+
+{% if p.concepts %}
+<div class="practise"><span class="muted small">You'll practise</span>
+  {% for slug in p.concepts %}{% if slug in concept_titles %}<a class="chip-btn" href="{{ url_for('concept', slug=slug) }}">{{ concept_titles[slug].icon }} {{ concept_titles[slug].title }}</a>{% endif %}{% endfor %}
+</div>
+{% endif %}
+
+<div class="info-grid">
+  <div class="card overview-card"><h4>{{ icon("list", 15) }} Requirements</h4><ul class="checklist">{% for r in p.requirements %}<li>{{ icon("check", 15) }}<span>{{ r }}</span></li>{% endfor %}</ul></div>
+  <div class="card overview-card"><h4>{{ icon("builder", 15) }} Class design</h4>{{ p.design | mermaid }}</div>
 </div>
 
-<h2>Build it step by step</h2>
-<p class="muted">Each step shows the code for the language selected at the top (or all three with ⇄ All).</p>
+<div class="section-head"><h2>Build it step by step</h2><span class="muted small">Code shown for the language selected at the top</span></div>
 <ol class="steps">
-  {% for step in p.steps %}
-  <li>
-    <h3>{{ step.title }}</h3>
+  {% for step in p.steps %}{% set sid = 's:' ~ p.slug ~ '/' ~ loop.index %}
+  <li data-step="{{ sid }}">
+    <div class="step-head">
+      <button type="button" class="check" data-step-check="{{ sid }}" aria-pressed="false" aria-label="Mark step {{ loop.index }} as built"><span class="n">{{ loop.index }}</span>{{ icon("check", 16) }}</button>
+      <h3>{{ step.title }}</h3>
+    </div>
     <div class="prose">{{ step.body | md }}</div>
     {% if step.code %}<div class="lang-panels">{% for lang, code in step.code.items() %}
       <div class="lp" data-l="{{ lang }}"><pre><code class="language-{{ {'python':'py','cpp':'c++','javascript':'js'}[lang] }}">{{ code }}</code></pre></div>{% endfor %}</div>{% endif %}
@@ -25,13 +55,20 @@
   {% endfor %}
 </ol>
 
-<h2 id="full">The complete program</h2>
+<div class="section-head" id="full"><h2>The complete program</h2><span class="muted small">Edit it, run it, break it</span></div>
 <div class="lang-panels">
   {% for lang, impl in p.implementations.items() %}
-  <div class="lp" data-l="{{ lang }}"><h3 class="lp-title" style="--lc: {{ LANGS[lang].color }}">{{ LANGS[lang].icon }} {{ LANGS[lang].name }}</h3>
-    {{ runner(lang, impl.code, impl.expected, impl.path.split('/')[-1], height='520px') }}</div>
+  <div class="lp" data-l="{{ lang }}"><h3 class="lp-title lt-{{ lang }}">{{ lang_badge(lang) }} {{ LANGS[lang].name }}</h3>
+    {{ runner(lang, impl.code, impl.expected, impl.path.replace('\\', '/').split('/')[-1], height='520px') }}</div>
   {% endfor %}
 </div>
-<article class="prose">{{ p.body | md }}</article>
-<div class="row" style="margin-top:28px"><label class="btn"><input type="checkbox" data-complete="p:{{ p.slug }}"> Mark project as done</label></div>
+{% if p.body.strip() %}<article class="prose">{{ p.body | md }}</article>{% endif %}
+
+<div class="finish card">
+  <div><b>Built it?</b><p class="muted small">All three versions print the same output. Compare yours with the expected output above.</p></div>
+  {{ complete_button('p:' ~ p.slug, "Mark project as done", "Project done") }}
+</div>
+{{ prevnext_nav(
+    (url_for('project', slug=prev.slug), "Previous project", prev.icon ~ " " ~ prev.title) if prev else None,
+    (url_for('project', slug=next.slug), "Next project", next.icon ~ " " ~ next.title) if next else (url_for('progress'), "You made it", "See your progress")) }}
 {% endblock %}

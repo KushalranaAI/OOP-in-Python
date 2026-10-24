@@ -1,52 +1,145 @@
+{% from "_icons.html" import icon, built_by, brand_mark, ring, status, lang_badge with context %}
 <!doctype html>
 <html lang="en" data-lang="python">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="run-token" content="{{ run_token }}">
-  <title>{% block title %}OOP in Python, C++ & JavaScript{% endblock %}</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧱</text></svg>">
-  <script>try { document.documentElement.dataset.lang = localStorage.getItem("oop-lang") || "python"; } catch (e) {}</script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/hljs-light.css') }}" media="(prefers-color-scheme: light)">
-  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/hljs-dark.css') }}" media="(prefers-color-scheme: dark)">
+  <meta name="base-path" content="{{ request.script_root }}">
+  {% if hosted %}<meta name="hosted" content="1">{% endif %}
+  {% if live_reload %}<meta name="live-reload" content="1">{% endif %}
+  <title>{% block title %}Learn OOP in Python, C++ & JavaScript{% endblock %} · {{ BRAND.product }}</title>
+  <meta name="description" content="An interactive course on object-oriented programming in Python, C++ and JavaScript: step-through memory traces, runnable code and step-by-step projects. Built by {{ BRAND.name }}.">
+  <meta name="author" content="{{ BRAND.name }}">
+  <meta property="og:title" content="{{ BRAND.product }} - by {{ BRAND.name }}">
+  <meta property="og:description" content="Understand objects from the inside, in Python, C++ and JavaScript side by side.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="me" href="{{ BRAND.links[0].href }}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234f46e5'/%3E%3Crect x='11' y='6' width='10' height='7' rx='2' fill='%23fff'/%3E%3Cpath d='M16 13v3.5M10 20v-3.5h12V20' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='6' y='20' width='8' height='6' rx='1.8' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Crect x='18' y='20' width='8' height='6' rx='1.8' fill='%23fff' fill-opacity='.55'/%3E%3C/svg%3E">
+  <script>
+    (function () {     // before first paint, so there is no flash of the wrong theme or language
+      var d = document.documentElement, t = "system";
+      try { d.dataset.lang = localStorage.getItem("oop-lang") || "python"; t = localStorage.getItem("oop-theme") || "system"; } catch (e) {}
+      d.dataset.themePref = t;
+      d.dataset.theme = t === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t;
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/hljs-dark.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
-<body>
-<div class="shell">
-  <aside class="sidebar" id="sidebar">
-    <a class="brand" href="{{ url_for('home') }}">🧱 OOP<span>in 🐍 Python · ⚙️ C++ · 🟨 JS</span></a>
-    <nav class="quick">
-      <a href="{{ url_for('playground') }}">▶ Playground</a>
-      <a href="{{ url_for('class_builder') }}">🏗️ Class builder</a>
-      <a href="{{ url_for('compare') }}">⇄ Compare</a>
-    </nav>
-    <details class="nav" {% if request.path.startswith('/basics') %}open{% endif %}>
-      <summary>① Basics (prerequisites)</summary>
-      <ul>{% for lang, info in LANGS.items() %}<li><a href="{{ url_for('track', lang=lang) }}" class="{{ 'active' if request.path.startswith('/basics/' ~ lang) }}">{{ info.icon }} {{ info.name }} basics <span class="muted">{{ nav_basics[lang]|length }}</span></a></li>{% endfor %}</ul>
+<body data-page="{% block page_id %}{% endblock %}">
+<div class="app">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <nav class="sidebar" id="sidebar" aria-label="Course navigation">
+    <a href="{{ url_for('home') }}" class="brand">
+      <span class="brand-mark">{{ brand_mark(30) }}</span>
+      <span><b>{{ BRAND.product }}</b><small>{{ BRAND.tagline }}</small></span>
+    </a>
+
+    {% set cur = request.path %}
+    <ul class="side-links">
+      {% for href, label, ic in [(url_for('home'), 'Dashboard', 'home'), (url_for('progress'), 'My progress', 'trophy'),
+                                 (url_for('playground'), 'Playground', 'terminal'), (url_for('class_builder'), 'Class builder', 'builder'),
+                                 (url_for('compare'), 'Compare cheat sheet', 'compare')] %}
+      {% set active = cur == href %}
+      <li><a href="{{ href }}" class="{{ 'active' if active }}" {% if active %}aria-current="page"{% endif %}>{{ icon(ic) }} {{ label }}</a></li>
+      {% endfor %}
+    </ul>
+
+    <div class="side-heading"><span>Curriculum</span><span class="muted" data-count='{{ course|map(attribute="id")|list|tojson|forceescape }}'></span></div>
+
+    {% for lang, info in LANGS.items() %}
+    {% set ids = course|selectattr("lang", "defined")|selectattr("lang", "equalto", lang)|map(attribute="id")|list %}
+    <details class="nav-section" {% if cur.startswith('/basics/' ~ lang) %}open{% endif %}>
+      <summary>
+        {% call ring(ids) %}{{ lang_badge(lang) }}{% endcall %}
+        <span class="nav-title">{{ info.name }} basics</span>
+        <span class="muted count" data-count='{{ ids|tojson|forceescape }}'></span>
+        {{ icon("chevron-down", 14, "caret") }}
+      </summary>
+      <ul>
+        <li><a href="{{ url_for('track', lang=lang) }}" class="{{ 'active' if cur == url_for('track', lang=lang) }}">{{ icon("list", 15) }}<span>Overview</span></a></li>
+        {% for l in nav_basics[lang] %}{% set href = url_for('lesson', lang=lang, slug=l.slug) %}
+        <li><a href="{{ href }}" class="{{ 'active' if cur == href }}" {% if cur == href %}aria-current="page"{% endif %}>{{ status('b:' ~ lang ~ '/' ~ l.slug) }}<span>{{ l.title }}</span></a></li>
+        {% endfor %}
+      </ul>
     </details>
-    <details class="nav" open>
-      <summary>② OOP concepts</summary>
-      <ul>{% for c in nav_concepts %}<li><a href="{{ url_for('concept', slug=c.slug) }}" class="{{ 'active' if request.path == url_for('concept', slug=c.slug) }}"><span class="dot" data-done="c:{{ c.slug }}"></span>{{ c.icon }} {{ c.title }}</a></li>{% endfor %}</ul>
+    {% endfor %}
+
+    {% set cids = course|selectattr("kind", "equalto", "concept")|map(attribute="id")|list %}
+    <details class="nav-section" {% if cur.startswith('/concepts') or cur == '/' %}open{% endif %}>
+      <summary>
+        {% call ring(cids) %}{{ icon("blocks", 12) }}{% endcall %}
+        <span class="nav-title">OOP concepts</span>
+        <span class="muted count" data-count='{{ cids|tojson|forceescape }}'></span>
+        {{ icon("chevron-down", 14, "caret") }}
+      </summary>
+      <ul>
+        {% for c in nav_concepts %}{% set href = url_for('concept', slug=c.slug) %}
+        <li><a href="{{ href }}" class="{{ 'active' if cur == href }}" {% if cur == href %}aria-current="page"{% endif %}>{{ status('c:' ~ c.slug) }}<span>{{ c.title }}</span></a></li>
+        {% endfor %}
+      </ul>
     </details>
-    <details class="nav" open>
-      <summary>③ Projects</summary>
-      <ul>{% for p in nav_projects %}<li><a href="{{ url_for('project', slug=p.slug) }}" class="{{ 'active' if request.path == url_for('project', slug=p.slug) }}"><span class="dot" data-done="p:{{ p.slug }}"></span>{{ p.icon }} {{ p.title }}</a></li>{% endfor %}</ul>
+
+    {% set pids = course|selectattr("kind", "equalto", "project")|map(attribute="id")|list %}
+    <details class="nav-section" {% if cur.startswith('/projects') %}open{% endif %}>
+      <summary>
+        {% call ring(pids) %}{{ icon("rocket", 12) }}{% endcall %}
+        <span class="nav-title">Projects</span>
+        <span class="muted count" data-count='{{ pids|tojson|forceescape }}'></span>
+        {{ icon("chevron-down", 14, "caret") }}
+      </summary>
+      <ul>
+        {% for pr in nav_projects %}{% set href = url_for('project', slug=pr.slug) %}
+        <li><a href="{{ href }}" class="{{ 'active' if cur == href }}" {% if cur == href %}aria-current="page"{% endif %}>{{ status('p:' ~ pr.slug) }}<span>{{ pr.title }}</span></a></li>
+        {% endfor %}
+      </ul>
     </details>
-  </aside>
-  <main class="main">
+
+    {{ built_by("side-brand") }}
+  </nav>
+  <div class="scrim" data-close-menu hidden></div>
+
+  <div class="content">
+    {% if hosted %}
+    <div class="hosted-banner" role="note">{{ icon("info", 15) }}<span>Hosted preview: Run shows each program's expected output.
+      To run and edit code on your machine, <a href="{{ REPO_URL }}" target="_blank" rel="noopener">clone the repo</a> and run <code>python start.py</code>.</span></div>
+    {% endif %}
     <header class="topbar">
-      <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <div class="lang-switch" role="group" aria-label="Language">
-        {% for lang, info in LANGS.items() %}<button data-set-lang="{{ lang }}">{{ info.icon }} {{ info.name }}</button>{% endfor %}
-        <button data-set-lang="all" title="Show all three side by side">⇄ All</button>
+      <button type="button" class="icon-btn menu-btn" data-menu aria-label="Toggle navigation" aria-controls="sidebar">{{ icon("menu") }}</button>
+      <nav class="crumbs" aria-label="Breadcrumb">{% block crumbs %}<span class="crumb"><span aria-current="page">Dashboard</span></span>{% endblock %}</nav>
+      <div class="top-actions">
+        <div class="lang-switch segmented" role="group" aria-label="Code language">
+          {% for lang, info in LANGS.items() %}<button type="button" data-set-lang="{{ lang }}" title="Show {{ info.name }}">{{ lang_badge(lang) }}<span class="ls-name">{{ info.name }}</span></button>{% endfor %}
+          <button type="button" data-set-lang="all" title="All three side by side">{{ icon("compare", 15) }}<span class="ls-name">All</span></button>
+        </div>
+        <button type="button" class="search-btn" data-palette>{{ icon("search", 16) }}<span>Search</span><kbd>Ctrl K</kbd></button>
+        <a href="{{ url_for('progress') }}" class="streak" data-streak hidden>{{ icon("flame", 16) }} <b></b><span class="sr-only"> day streak</span></a>
+        <button type="button" class="btn ai-toggle" data-ai-toggle aria-pressed="false" aria-controls="ai-panel" title="Ask the AI tutor (Ctrl+/)">{{ icon("sparkles", 16) }}<span>Ask AI</span></button>
+        <button type="button" class="icon-btn" data-theme-toggle>{{ icon("monitor", 18, "t-system") }}{{ icon("sun", 18, "t-light") }}{{ icon("moon", 18, "t-dark") }}</button>
       </div>
+      <div class="read-progress" aria-hidden="true"><div></div></div>
     </header>
-    {% block content %}{% endblock %}
-  </main>
+    <main id="main" class="main">{% block content %}{% endblock %}</main>
+    <footer class="site-footer">{{ built_by() }}</footer>
+  </div>
 </div>
+
+<div class="palette-scrim" data-palette-root hidden>
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Search the course">
+    <label class="palette-input">{{ icon("search", 18) }}<input type="text" placeholder="Search lessons, concepts, projects…" aria-label="Search" autocomplete="off" spellcheck="false"><kbd>Esc</kbd></label>
+    <ul class="palette-list" role="listbox"></ul>
+    <div class="palette-foot muted small"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
+  </div>
+</div>
+<div class="toaster" aria-live="polite"></div>
+
+<script type="application/json" id="course-data">{{ course|tojson }}</script>
 <script src="{{ url_for('static', filename='vendor/highlight.min.js') }}"></script>
 <script src="{{ url_for('static', filename='vendor/mermaid.min.js') }}"></script>
 <script src="{{ url_for('static', filename='app.js') }}"></script>
+<script src="{{ url_for('static', filename='ai.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

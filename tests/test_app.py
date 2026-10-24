@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app import content, create_app  # noqa: E402
 from app.runner import run, toolchains  # noqa: E402
+from scripts.build_pages import all_paths, build  # noqa: E402
 
 LANGS = list(content.LANGS)
 CONCEPTS = content.concepts()
@@ -123,16 +124,6 @@ def client():
     return app.test_client(), app.config["RUN_TOKEN"]
 
 
-def all_paths():
-    paths = ["/", "/playground", "/compare", "/class-builder"]
-    for lang, lessons in content.basics().items():
-        paths.append(f"/basics/{lang}/")
-        paths += [f"/basics/{lang}/{lesson.slug}" for lesson in lessons]
-    paths += [f"/concepts/{c.slug}" for c in CONCEPTS]
-    paths += [f"/projects/{p.slug}" for p in PROJECTS]
-    return paths
-
-
 @pytest.mark.parametrize("path", all_paths())
 def test_page_renders(client, path):
     c, _ = client
@@ -157,6 +148,35 @@ def test_run_api_requires_token_json_and_local_host(client):
     assert c.post("/api/run", json=body, headers={"X-Run-Token": token, "Host": "evil.example"}).status_code == 403
     ok = c.post("/api/run", json=body, headers={"X-Run-Token": token, "Origin": "http://127.0.0.1:5070"})
     assert ok.status_code == 200 and ok.get_json()["stdout"].strip() == "42"
+
+
+def test_live_reload_notices_content_changes(monkeypatch):
+    import app as app_module
+    signature = {"value": "a"}
+    monkeypatch.setattr(app_module, "files_signature", lambda: signature["value"])
+    c = create_app(live_reload=True).test_client()
+    assert 'name="live-reload"' in c.get("/").get_data(as_text=True)
+    first = c.get("/api/live-reload").get_json()["version"]
+    assert c.get("/api/live-reload").get_json()["version"] == first          # nothing changed
+    signature["value"] = "b"                                                  # a file was edited
+    assert c.get("/api/live-reload").get_json()["version"] != first
+    assert c.get("/api/live-reload", headers={"Origin": "https://evil.example"}).status_code == 403
+    assert create_app().test_client().get("/api/live-reload").status_code == 404   # off unless start.py asks
+
+
+def test_hosted_copy_has_no_run_api_and_explains_why():
+    c = create_app(hosted=True).test_client()
+    assert c.post("/api/run", json={"lang": "python", "code": "print(1)"}).status_code == 404
+    page = c.get("/").get_data(as_text=True)
+    assert 'name="hosted"' in page and "hosted-banner" in page and 'name="run-token" content=""' in page
+
+
+def test_static_site_builds_with_working_links(tmp_path):
+    assert build(tmp_path / "site", "/OOP-All-In-One") == []
+    site = tmp_path / "site"
+    assert (site / "index.html").is_file() and (site / "404.html").is_file() and (site / ".nojekyll").is_file()
+    assert (site / "concepts" / "06-inheritance.html").is_file() and (site / "basics" / "python" / "index.html").is_file()
+    assert 'src="/OOP-All-In-One/static/app.js"' in (site / "index.html").read_text(encoding="utf-8")
 
 
 def test_runner_reports_errors_and_unknown_languages():

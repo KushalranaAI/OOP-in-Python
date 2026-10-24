@@ -1,0 +1,93 @@
+{# Stroke icons on a 24px grid (lucide style), drawn here so no icon package is needed. app.js has a copy of the few it builds itself. #}
+{% set ICONS = {
+  "home": '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  "trophy": '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  "play": '<path d="M7 4.5v15l12-7.5-12-7.5Z"/>',
+  "terminal": '<path d="m5 8 4 4-4 4M12 16h7"/><rect x="2" y="3" width="20" height="18" rx="3"/>',
+  "blocks": '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><path d="M7 11v6a2 2 0 0 0 2 2h4M17 13V9a2 2 0 0 0-2-2h-4"/>',
+  "builder": '<rect x="8" y="2.5" width="8" height="5" rx="1.2"/><rect x="2.5" y="16.5" width="8" height="5" rx="1.2"/><rect x="13.5" y="16.5" width="8" height="5" rx="1.2"/><path d="M12 7.5v4.5M6.5 16.5V12h11v4.5"/>',
+  "compare": '<path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/>',
+  "rocket": '<path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.8-.9.7-2.2-.1-3s-2.1-.9-2.9 0Z"/><path d="m12 15-3-3a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/>',
+  "book": '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5v-2Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>',
+  "graduation": '<path d="M22 9 12 4 2 9l10 5 10-5Z"/><path d="M6 11v5c3 2.7 9 2.7 12 0v-5M22 9v6"/>',
+  "search": '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  "moon": '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/>',
+  "monitor": '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  "menu": '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  "chevron-down": '<path d="m6 9 6 6 6-6"/>',
+  "chevron-right": '<path d="m9 6 6 6-6 6"/>',
+  "arrow-right": '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  "arrow-left": '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  "check": '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  "circle": '<circle cx="12" cy="12" r="8.5"/>',
+  "circle-check": '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 3 3 5-6"/>',
+  "circle-half": '<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17Z" fill="currentColor"/>',
+  "clock": '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  "flame": '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>',
+  "x": '<path d="M6 6l12 12M18 6 6 18"/>',
+  "copy": '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+  "reset": '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  "target": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  "sliders": '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  "code": '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',
+  "list": '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  "info": '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+  "alert": '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
+  "lightbulb": '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/>',
+  "download": '<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
+  "trash": '<path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/>',
+  "calendar": '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  "layers": '<path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+  "map": '<path d="m9 3-6 3v15l6-3 6 3 6-3V3l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/>',
+  "sparkles": '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/>',
+  "key": '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3M14.5 8.5l2 2"/>',
+  "keyboard": '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M8 16h8"/>',
+} %}
+
+{% macro icon(name, size=18, cls="", label=None) -%}
+<svg class="icon {{ cls }}" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {% if label %}role="img" aria-label="{{ label }}"{% else %}aria-hidden="true"{% endif %} focusable="false">{{ ICONS[name]|safe }}</svg>
+{%- endmacro %}
+
+{# Filled brand marks for the social links. #}
+{% set MARKS = {
+  "portfolio": '<path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4.1 11h3.4c.1-2 .5-3.8 1.1-5.2A8 8 0 0 0 4.1 11zm0 2a8 8 0 0 0 4.5 5.2c-.6-1.4-1-3.2-1.1-5.2H4.1zm5.4 0c.2 2.4.8 4.3 1.5 5.4.3.4.7.6 1 .6s.7-.2 1-.6c.7-1.1 1.3-3 1.5-5.4H9.5zm0-2h5c-.2-2.4-.8-4.3-1.5-5.4-.3-.4-.7-.6-1-.6s-.7.2-1 .6c-.7 1.1-1.3 3-1.5 5.4zm7 2c-.1 2-.5 3.8-1.1 5.2a8 8 0 0 0 4.5-5.2h-3.4zm3.4-2a8 8 0 0 0-4.5-5.2c.6 1.4 1 3.2 1.1 5.2h3.4z"/>',
+  "linkedin": '<rect x="2.5" y="9" width="4" height="12.5" rx="0.6"/><circle cx="4.5" cy="4.6" r="2.3"/><path d="M9.5 9h3.8v1.8c.6-1.1 2-2.1 4-2.1 3.7 0 4.7 2.4 4.7 5.6v6.2h-4v-5.5c0-1.4-.2-2.6-1.8-2.6-1.7 0-2.1 1.2-2.1 2.6v5.5h-4V9z"/>',
+  "x": '<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.6l5.24 6.93 6.06-6.93zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41z"/>',
+  "medium": '<circle cx="7.4" cy="12" r="5.6"/><ellipse cx="16.6" cy="12" rx="2.9" ry="5.3"/><rect x="21" y="6.9" width="1.7" height="10.2" rx="0.85"/>',
+  "youtube": '<path fill-rule="evenodd" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8C22 15.2 22 12 22 12s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z"/>',
+} %}
+
+{% macro built_by(cls="") -%}
+<div class="built-by {{ cls }}">
+  <span>Built by <a href="{{ BRAND.links[0].href }}" target="_blank" rel="noopener noreferrer me"><b>{{ BRAND.name }}</b></a></span>
+  <span class="social-links">{% for l in BRAND.links %}<a href="{{ l.href }}" target="_blank" rel="noopener noreferrer me" aria-label="{{ BRAND.name }} on {{ l.label }}" title="{{ l.label }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">{{ MARKS[l.id]|safe }}</svg></a>{% endfor %}</span>
+</div>
+{%- endmacro %}
+
+{# The brand mark: a class with two subclasses - the shape of every inheritance diagram in the course. #}
+{% macro brand_mark(size=32) -%}
+<svg viewBox="0 0 32 32" width="{{ size }}" height="{{ size }}" aria-hidden="true" focusable="false">
+  <rect width="32" height="32" rx="9" fill="var(--brand-solid)"/>
+  <rect x="11" y="6" width="10" height="7" rx="2" fill="#fff"/>
+  <path d="M16 13v3.5M10 20v-3.5h12V20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="6" y="20" width="8" height="6" rx="1.8" fill="none" stroke="#fff" stroke-width="2"/>
+  <rect x="18" y="20" width="8" height="6" rx="1.8" fill="#fff" fill-opacity=".55"/>
+</svg>
+{%- endmacro %}
+
+{# Progress ring filled in by app.js from the ids it covers. #}
+{% macro ring(ids, size=26, stroke=3, big=False) -%}
+{%- set r = (size - stroke) / 2 -%}
+<span class="ring" style="width:{{ size }}px;height:{{ size }}px;--c:{{ '%.2f'|format(6.2832 * r) }}" data-ring='{{ ids|tojson|forceescape }}' role="img" aria-label="Progress">
+  <svg width="{{ size }}" height="{{ size }}" viewBox="0 0 {{ size }} {{ size }}" aria-hidden="true"><circle cx="{{ size / 2 }}" cy="{{ size / 2 }}" r="{{ r }}" fill="none" stroke="var(--surface-3)" stroke-width="{{ stroke }}"/><circle class="ring-fg" cx="{{ size / 2 }}" cy="{{ size / 2 }}" r="{{ r }}" fill="none" stroke-width="{{ stroke }}" stroke-linecap="round" transform="rotate(-90 {{ size / 2 }} {{ size / 2 }})"/></svg>
+  <span class="ring-label">{{ caller() if caller }}</span>
+</span>
+{%- endmacro %}
+
+{# done / not started / in progress, filled in by app.js #}
+{% macro status(id, size=15) -%}
+<span class="status" data-status="{{ id }}">{{ icon("circle", size, "s-new") }}{{ icon("circle-half", size, "s-started") }}{{ icon("circle-check", size, "s-done") }}</span>
+{%- endmacro %}
+
+{% macro lang_badge(lang) -%}<span class="lang-badge lb-{{ lang }}" aria-hidden="true">{{ {"python": "Py", "cpp": "C++", "javascript": "JS"}[lang] }}</span>{%- endmacro %}

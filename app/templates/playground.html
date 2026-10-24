@@ -1,14 +1,20 @@
 {% extends "base.html" %}
-{% from "_macros.html" import runner with context %}
+{% from "_macros.html" import runner, crumb with context %}
+{% from "_icons.html" import icon, lang_badge %}
 {% block title %}Playground{% endblock %}
+{% block crumbs %}{{ crumb("Playground", first=True) }}{% endblock %}
 {% block content %}
-<h1>▶ Playground</h1>
-<p class="lead">Write and run Python, C++ or JavaScript right here. Your code runs on your own machine
-  ({% for lang, info in LANGS.items() %}{{ info.name }}: {{ 'ready' if toolchains[lang] else 'not installed' }}{{ ', ' if not loop.last }}{% endfor %}).</p>
+<header class="page-head">
+  <span class="eyebrow">{{ icon("terminal", 14) }} Scratch space</span>
+  <h1>Playground</h1>
+  <p class="lead">Write and run Python, C++ or JavaScript right here. Your code runs on your own machine.</p>
+  {% if hosted %}<div class="notice info">{{ icon("info", 16) }}<span>The playground needs the local app to run code. <a href="{{ REPO_URL }}" target="_blank" rel="noopener">Clone the repo</a> and run <code>python start.py</code>.</span></div>
+  {% else %}<div class="meta-row">{% for lang, info in LANGS.items() %}<span class="pill {{ 'good' if toolchains[lang] else 'warn' }}">{{ lang_badge(lang) }} {{ info.name }}: {{ 'ready' if toolchains[lang] else 'not installed' }}</span>{% endfor %}</div>{% endif %}
+</header>
 <div class="lang-panels">
-  <div class="lp" data-l="python">{{ runner('python', 'class Greeter:\n    def __init__(self, name: str) -> None:\n        self.name = name\n\n    def greet(self) -> str:\n        return f"Hello, {self.name}!"\n\n\nprint(Greeter("world").greet())\n', height='380px') }}</div>
-  <div class="lp" data-l="cpp">{{ runner('cpp', '#include <iostream>\n#include <string>\n\nclass Greeter {\npublic:\n    explicit Greeter(std::string name) : name_(std::move(name)) {}\n    std::string greet() const { return "Hello, " + name_ + "!"; }\nprivate:\n    std::string name_;\n};\n\nint main() {\n    std::cout << Greeter("world").greet() << "\\n";\n}\n', height='380px') }}</div>
-  <div class="lp" data-l="javascript">{{ runner('javascript', 'class Greeter {\n  #name;\n  constructor(name) {\n    this.#name = name;\n  }\n  greet() {\n    return `Hello, ${this.#name}!`;\n  }\n}\n\nconsole.log(new Greeter("world").greet());\n', height='380px') }}</div>
+  <div class="lp" data-l="python"><h3 class="lp-title lt-python">{{ lang_badge('python') }} Python</h3>{{ runner('python', 'class Greeter:\n    def __init__(self, name: str) -> None:\n        self.name = name\n\n    def greet(self) -> str:\n        return f"Hello, {self.name}!"\n\n\nprint(Greeter("world").greet())\n', height='400px') }}</div>
+  <div class="lp" data-l="cpp"><h3 class="lp-title lt-cpp">{{ lang_badge('cpp') }} C++</h3>{{ runner('cpp', '#include <iostream>\n#include <string>\n\nclass Greeter {\npublic:\n    explicit Greeter(std::string name) : name_(std::move(name)) {}\n    std::string greet() const { return "Hello, " + name_ + "!"; }\nprivate:\n    std::string name_;\n};\n\nint main() {\n    std::cout << Greeter("world").greet() << "\\n";\n}\n', height='400px') }}</div>
+  <div class="lp" data-l="javascript"><h3 class="lp-title lt-javascript">{{ lang_badge('javascript') }} JavaScript</h3>{{ runner('javascript', 'class Greeter {\n  #name;\n  constructor(name) {\n    this.#name = name;\n  }\n  greet() {\n    return `Hello, ${this.#name}!`;\n  }\n}\n\nconsole.log(new Greeter("world").greet());\n', height='400px') }}</div>
 </div>
-<p class="muted">Tips: <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> runs · <kbd>Tab</kbd> indents · programs are stopped after 10 seconds.</p>
+<div class="notice">{{ icon("keyboard", 16) }}<span><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> runs · <kbd>Tab</kbd> indents · programs are stopped after 10 seconds.</span></div>
 {% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import crumb %}
+{% from "_icons.html" import icon, ring, status, lang_badge with context %}
+{% block title %}Projects{% endblock %}
+{% block crumbs %}{{ crumb("Projects", first=True) }}{% endblock %}
+{% block content %}
+{% set ids = course|selectattr("kind", "equalto", "project")|map(attribute="id")|list %}
+<header class="page-head with-ring">
+  <div>
+    <span class="eyebrow">{{ icon("rocket", 14) }} ③ Projects</span>
+    <h1>Build real things</h1>
+    <p class="lead">Five step-by-step builds, from a bank account to a turn-based battle. Each step explains <em>why</em> and shows that step's code. All three implementations print exactly the same output.</p>
+  </div>
+  <div class="section-progress card">
+    {% call ring(ids, 64, 6) %}<span class="ring-big"><span data-pct>0</span><small>%</small></span>{% endcall %}
+    <div><b data-count='{{ ids|tojson|forceescape }}'></b><div class="muted small">projects done</div></div>
+  </div>
+</header>
+<div class="grid projects-grid">
+  {% for pr in nav_projects %}{% set step_ids = [] %}{% for s in pr.steps %}{% set _ = step_ids.append('s:' ~ pr.slug ~ '/' ~ loop.index) %}{% endfor %}
+  <a class="card link-card lift project-card" href="{{ url_for('project', slug=pr.slug) }}">
+    <span class="card-foot" style="margin-top:0;padding-top:0"><span class="pill {{ pr.level|lower }}">{{ pr.level }}</span><span class="muted small">{{ pr.steps|length }} steps</span><span class="spacer"></span>{{ status('p:' ~ pr.slug, 18) }}</span>
+    <span class="project-icon" aria-hidden="true">{{ pr.icon }}</span>
+    <b class="card-title">{{ pr.title }}</b>
+    <span class="muted small">{{ pr.summary }}</span>
+    <span class="card-foot">{% for lang in pr.implementations %}{{ lang_badge(lang) }}{% endfor %}</span>
+    <div class="bar" data-bar='{{ step_ids|tojson|forceescape }}' data-bar-done="p:{{ pr.slug }}"><div></div></div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,2 +1,12 @@
 {% extends "base.html" %}
-{% block content %}<h1>Not found</h1><p class="lead">That page doesn't exist. <a href="{{ url_for('home') }}">Go home</a>.</p>{% endblock %}
+{% from "_icons.html" import icon %}
+{% block title %}Not found{% endblock %}
+{% block crumbs %}{% endblock %}
+{% block content %}
+<div class="empty-page">
+  <span class="stat-icon">{{ icon("map", 22) }}</span>
+  <h1>Page not found</h1>
+  <p class="lead">That page doesn't exist. Try searching with <kbd>Ctrl</kbd> + <kbd>K</kbd>.</p>
+  <a class="btn primary" href="{{ url_for('home') }}">{{ icon("home", 16) }} Back to the dashboard</a>
+</div>
+{% endblock %}

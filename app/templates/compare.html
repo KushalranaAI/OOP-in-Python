@@ -1,13 +1,23 @@
 {% extends "base.html" %}
+{% from "_macros.html" import crumb %}
+{% from "_icons.html" import icon, lang_badge %}
 {% block title %}Compare{% endblock %}
+{% block crumbs %}{{ crumb("Compare cheat sheet", first=True) }}{% endblock %}
 {% block content %}
-<h1>⇄ Python vs C++ vs JavaScript</h1>
-<p class="lead">Every comparison row from every concept, in one cheat sheet. Click a concept name to learn more.</p>
-<div class="table-wrap"><table class="compare">
-  <tr><th>Concept</th><th>Aspect</th>{% for lang, info in LANGS.items() %}<th>{{ info.icon }} {{ info.name }}</th>{% endfor %}</tr>
+<header class="page-head">
+  <span class="eyebrow">{{ icon("compare", 14) }} Cheat sheet</span>
+  <h1>Python vs C++ vs JavaScript</h1>
+  <p class="lead">Every comparison row from every concept, in one table. Click a concept to learn more.</p>
+</header>
+<label class="lab-search wide">{{ icon("search", 16) }}<input type="search" placeholder="Filter rows: constructor, private, virtual…" data-filter-table="compare-all" aria-label="Filter the comparison"></label>
+<div class="table-wrap"><table class="compare" id="compare-all">
+  <thead><tr><th>Concept</th><th>Aspect</th>{% for lang, info in LANGS.items() %}<th>{{ lang_badge(lang) }} {{ info.name }}</th>{% endfor %}</tr></thead>
+  <tbody>
   {% for c, row in rows %}
-  <tr>{% if loop.first or rows[loop.index0 - 1][0].slug != c.slug %}<td rowspan="{{ c.compare|length }}"><a href="{{ url_for('concept', slug=c.slug) }}">{{ c.icon }} {{ c.title }}</a></td>{% endif %}
+  <tr data-group="{{ c.slug }}"><td class="group-cell">{% if loop.first or rows[loop.index0 - 1][0].slug != c.slug %}<a href="{{ url_for('concept', slug=c.slug) }}">{{ c.icon }} {{ c.title }}</a>{% endif %}</td>
     <th>{{ row[0] }}</th>{% for cell in row[1:] %}<td>{{ cell | md }}</td>{% endfor %}</tr>
   {% endfor %}
+  </tbody>
 </table></div>
+<p class="muted" data-filter-empty hidden>No rows match that filter.</p>
 {% endblock %}

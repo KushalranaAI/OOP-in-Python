@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "_macros.html" import crumb %}
+{% from "_icons.html" import icon, ring, lang_badge with context %}
+{% block title %}My progress{% endblock %}
+{% block crumbs %}{{ crumb("My progress", first=True) }}{% endblock %}
+{% block content %}
+{% set all_ids = course|map(attribute="id")|list %}
+<header class="page-head with-ring">
+  <div>
+    <span class="eyebrow">{{ icon("trophy", 14) }} Your learning</span>
+    <h1>My progress</h1>
+    <p class="lead">Everything is stored in this browser only. Export it to move to another machine.</p>
+  </div>
+  <div class="section-progress card">
+    {% call ring(all_ids, 76, 7) %}<span class="ring-big"><span data-pct>0</span><small>%</small></span>{% endcall %}
+    <div><b data-count='{{ all_ids|tojson|forceescape }}'></b><div class="muted small">pages done</div></div>
+  </div>
+</header>
+
+<section class="stats" aria-label="Your stats">
+  <div class="stat-card card"><span class="stat-icon">{{ icon("circle-check") }}</span><div><div class="stat-value" data-stat="done">0</div><div class="muted small">Lessons &amp; concepts done</div></div></div>
+  <div class="stat-card card"><span class="stat-icon">{{ icon("clock") }}</span><div><div class="stat-value" data-stat="time">0 min</div><div class="muted small">Time invested</div></div></div>
+  <div class="stat-card card"><span class="stat-icon">{{ icon("flame") }}</span><div><div class="stat-value" data-stat="streak">0</div><div class="muted small">Current streak (days)</div></div></div>
+  <div class="stat-card card"><span class="stat-icon">{{ icon("calendar") }}</span><div><div class="stat-value" data-stat="longest">0</div><div class="muted small">Longest streak</div></div></div>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>Activity</h2><span class="muted small" data-active-days></span></div>
+  <div class="heatmap" data-heatmap aria-label="Days you studied in the last 18 weeks"></div>
+  <div class="heat-legend muted small">Less <i class="heat"></i><i class="heat l1"></i><i class="heat l2"></i><i class="heat l3"></i><i class="heat l4"></i> More</div>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>By part</h2></div>
+  <div class="part-bars">
+    {% for lang, info in LANGS.items() %}{% set ids = course|selectattr("lang", "defined")|selectattr("lang", "equalto", lang)|map(attribute="id")|list %}
+    <a class="part-bar" href="{{ url_for('track', lang=lang) }}">{{ lang_badge(lang) }}<span class="part-bar-title">{{ info.name }} basics</span><div class="bar" data-bar='{{ ids|tojson|forceescape }}'><div></div></div><span class="muted small" data-count='{{ ids|tojson|forceescape }}'></span></a>
+    {% endfor %}
+    {% set ids = course|selectattr("kind", "equalto", "concept")|map(attribute="id")|list %}
+    <a class="part-bar" href="{{ url_for('concepts_index') }}"><span class="ring-icon">{{ icon("blocks", 14) }}</span><span class="part-bar-title">OOP concepts</span><div class="bar" data-bar='{{ ids|tojson|forceescape }}'><div></div></div><span class="muted small" data-count='{{ ids|tojson|forceescape }}'></span></a>
+    {% set ids = course|selectattr("kind", "equalto", "project")|map(attribute="id")|list %}
+    <a class="part-bar" href="{{ url_for('projects_index') }}"><span class="ring-icon">{{ icon("rocket", 14) }}</span><span class="part-bar-title">Projects</span><div class="bar" data-bar='{{ ids|tojson|forceescape }}'><div></div></div><span class="muted small" data-count='{{ ids|tojson|forceescape }}'></span></a>
+  </div>
+</section>
+
+<section class="card">
+  <div class="section-head"><h2>Recently completed</h2></div>
+  <div class="list" data-recent><p class="empty muted">{{ icon("info", 16) }} Nothing yet. Finish a lesson and it shows up here.</p></div>
+</section>
+
+<section>
+  <div class="section-head"><h2>Your data</h2></div>
+  <div class="row">
+    <button type="button" class="btn" data-export>{{ icon("download", 16) }} Export progress</button>
+    <label class="btn">{{ icon("reset", 16) }} Import… <input type="file" accept="application/json" data-import hidden></label>
+    <button type="button" class="btn danger" data-reset-progress>{{ icon("trash", 16) }} Reset everything</button>
+  </div>
+</section>
+{% endblock %}

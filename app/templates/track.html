@@ -1,11 +1,34 @@
 {% extends "base.html" %}
+{% from "_macros.html" import crumb %}
+{% from "_icons.html" import icon, ring, lang_badge with context %}
 {% block title %}{{ LANGS[lang].name }} basics{% endblock %}
+{% block crumbs %}{{ crumb("Basics", first=True) }}{{ crumb(LANGS[lang].name) }}{% endblock %}
 {% block content %}
-<p class="crumbs">① Basics</p>
-<h1>{{ LANGS[lang].icon }} {{ LANGS[lang].name }} basics</h1>
-<p class="lead">Everything the OOP chapters assume you know in {{ LANGS[lang].name }}. Every complete program has a ▶ Run button.</p>
+{% set ids = [] %}{% for l in lessons %}{% set _ = ids.append('b:' ~ lang ~ '/' ~ l.slug) %}{% endfor %}
+<header class="page-head with-ring">
+  <div>
+    <span class="eyebrow">{{ icon("book", 14) }} ① Basics · the prerequisites</span>
+    <h1>{{ LANGS[lang].name }} basics</h1>
+    <p class="lead">Everything the OOP chapters assume you know in {{ LANGS[lang].name }}. Every complete program has a <b>Run</b> button.</p>
+  </div>
+  <div class="section-progress card">
+    {% call ring(ids, 64, 6) %}<span class="ring-big"><span data-pct>0</span><small>%</small></span>{% endcall %}
+    <div><b data-count='{{ ids|tojson|forceescape }}'></b><div class="muted small">lessons done</div></div>
+  </div>
+</header>
+
 <ol class="lesson-list">
-  {% for l in lessons %}<li><a class="card" href="{{ url_for('lesson', lang=lang, slug=l.slug) }}"><b>{{ l.title }}</b><p>{{ l.summary }}</p></a></li>{% endfor %}
+  {% for l in lessons %}{% set id = 'b:' ~ lang ~ '/' ~ l.slug %}{% set info = (course|selectattr("id", "equalto", id)|first) %}
+  <li><a class="lesson-row" href="{{ url_for('lesson', lang=lang, slug=l.slug) }}">
+    <span class="lesson-num" data-num="{{ id }}">{{ '%02d'|format(l.order) }}</span>
+    <span class="lesson-main"><b>{{ l.title }}</b><span class="muted small">{{ l.summary }}</span></span>
+    <span class="lesson-meta"><span class="muted small">{{ icon("clock", 12) }} {{ info.minutes }} min</span></span>
+    {{ icon("chevron-right", 18, "go") }}
+  </a></li>
+  {% endfor %}
 </ol>
-<p class="muted">Other tracks: {% for other, info in LANGS.items() if other != lang %}<a href="{{ url_for('track', lang=other) }}">{{ info.icon }} {{ info.name }}</a>{{ ' · ' if not loop.last }}{% endfor %}</p>
+
+<div class="section-head"><h2>Other tracks</h2></div>
+<div class="row">{% for other, info in LANGS.items() if other != lang %}<a class="btn" href="{{ url_for('track', lang=other) }}">{{ lang_badge(other) }} {{ info.name }} basics</a>{% endfor %}
+  <a class="btn primary" href="{{ url_for('concept', slug=nav_concepts[0].slug) }}">Skip to the OOP concepts {{ icon("arrow-right", 16) }}</a></div>
 {% endblock %}

@@ -20,14 +20,14 @@
       .dp-box { border: 1.5px solid var(--border); border-radius: 10px; padding: 6px 10px; font-family: var(--mono); font-size: 12.5px; background: var(--panel); min-width: 90px; transition: .2s; }
       .dp-box small { display: block; color: var(--muted); font-family: system-ui; }
       .dp-box.visited { border-color: var(--muted); background: var(--panel-2); }
-      .dp-box.hit { border-color: var(--ok); box-shadow: 0 0 0 3px rgba(18,128,92,.2); }
+      .dp-box.hit { border-color: var(--ok); box-shadow: 0 0 0 3px var(--good-soft); }
       .dp-box.miss { border-color: var(--bad); }
       .dp-arrow { color: var(--muted); }
       .dp-result { padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); font-size: .95rem; }
-      .dp-result.error { background: rgba(196,50,10,.1); color: var(--bad); }
+      .dp-result.error { background: var(--bad-soft); color: var(--bad); }
       .dp-vt { border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; margin: 6px 0; }
       .dp-vt td, .dp-vt th { border: 1px solid var(--border); padding: 3px 8px; }
-      .dp-vt tr.hit td { background: rgba(18,128,92,.15); font-weight: 700; }` }));
+      .dp-vt tr.hit td { background: var(--good-soft); font-weight: 700; }` }));
   }
 
   function animateChain(container, boxes, hitIndex) {

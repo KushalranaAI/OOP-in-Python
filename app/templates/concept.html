@@ -1,73 +1,105 @@
 {% extends "base.html" %}
-{% from "_macros.html" import runner with context %}
+{% from "_macros.html" import runner, prevnext as prevnext_nav, complete_button, crumb with context %}
+{% from "_icons.html" import icon, lang_badge %}
 {% block title %}{{ c.title }}{% endblock %}
+{% block page_id %}c:{{ c.slug }}{% endblock %}
+{% block crumbs %}{{ crumb("OOP concepts", url_for('concepts_index'), first=True) }}{{ crumb(c.title) }}{% endblock %}
 {% block content %}
-<p class="crumbs">② OOP concepts · {{ '%02d'|format(c.order) }}</p>
-<h1>{{ c.icon }} {{ c.title }}</h1>
-<p class="lead">{{ c.summary }}</p>
-{% if c.why %}<div class="callout"><b>Why it matters.</b> {{ c.why }}</div>{% endif %}
+{% set info = (course|selectattr("id", "equalto", "c:" ~ c.slug)|first) %}
+{% set toc = [("idea", "The idea")] + ([("interactive", "Interactive")] if c.widgets else []) + [("languages", "In each language")]
+             + ([("compare", "Comparison")] if c.compare else []) + ([("quiz", "Quick check")] if c.quiz else []) %}
+<header class="page-head">
+  <span class="eyebrow">{{ icon("blocks", 14) }} OOP concept {{ '%02d'|format(c.order) }} of {{ nav_concepts|length }}</span>
+  <h1>{{ c.icon }} {{ c.title }}</h1>
+  <p class="lead">{{ c.summary }}</p>
+  <div class="meta-row">
+    <span class="pill">{{ icon("clock", 13) }} {{ info.minutes }} min</span>
+    {% for lang in c.examples %}<span class="pill">{{ lang_badge(lang) }} runnable</span>{% endfor %}
+    {% if c.quiz %}<span class="pill">{{ icon("target", 13) }} {{ c.quiz|length }}-question check</span>{% endif %}
+    <span class="pill good" data-done-pill="c:{{ c.slug }}" hidden>{{ icon("check", 13) }} understood</span>
+  </div>
+</header>
 
-<nav class="toc">
-  <a href="#idea">The idea</a>{% if c.widgets %}<a href="#interactive">Interactive</a>{% endif %}<a href="#languages">In each language</a>
-  {% if c.compare %}<a href="#compare">Compare</a>{% endif %}{% if c.quiz %}<a href="#quiz">Quick check</a>{% endif %}
-</nav>
+{% if c.why %}
+<div class="overview-card wide card"><h4>{{ icon("lightbulb", 15) }} Why it matters</h4><p>{{ c.why }}</p></div>
+{% endif %}
 
-<section id="idea"><h2>The idea</h2><article class="prose">{{ c.body | md }}</article></section>
+<div class="with-toc">
+  <div class="lesson-body">
+    <section id="idea"><h2 class="section-title">The idea</h2><article class="prose">{{ c.body | md }}</article></section>
 
-{% if c.widgets %}
-<section id="interactive"><h2>Interactive</h2>
-  {% for w in c.widgets %}
-    {% if w.type == 'trace' %}
-      <div class="lang-panels">{% for lang, name in w.traces.items() %}
-        <div class="lp" data-l="{{ lang }}"><div class="widget" data-widget="trace" data-config='{{ traces[name]|tojson|forceescape }}'></div></div>
-      {% endfor %}</div>
-    {% else %}
-      <div class="widget" data-widget="{{ w.type }}" data-config='{{ w|tojson|forceescape }}'></div>
+    {% if c.widgets %}
+    <section id="interactive"><h2 class="section-title">Interactive</h2>
+      <p class="muted small">{{ icon("keyboard", 14) }} Click a visual, then use <kbd>←</kbd> <kbd>→</kbd> to step.</p>
+      {% for w in c.widgets %}
+        {% if w.type == 'trace' %}
+          <div class="lang-panels">{% for lang, name in w.traces.items() %}
+            <div class="lp" data-l="{{ lang }}"><div class="widget" data-widget="trace" data-config='{{ traces[name]|tojson|forceescape }}'></div></div>
+          {% endfor %}</div>
+        {% else %}
+          <div class="widget" data-widget="{{ w.type }}" data-config='{{ w|tojson|forceescape }}'></div>
+        {% endif %}
+      {% endfor %}
+    </section>
     {% endif %}
-  {% endfor %}
-</section>
-{% endif %}
 
-<section id="languages"><h2>In each language</h2>
-  <p class="muted">Use the language switch at the top. <b>⇄ All</b> shows the three side by side.</p>
-  <div class="lang-panels">
-    {% for lang, info in LANGS.items() if lang in c.sections %}
-    <div class="lp" data-l="{{ lang }}">
-      <h3 class="lp-title" style="--lc: {{ info.color }}">{{ info.icon }} {{ info.name }}</h3>
-      <article class="prose" data-code-lang="{{ lang }}">{{ c.sections[lang] | md }}</article>
-      {% if lang in c.examples %}<h4>Try it - edit and run</h4>{{ runner(lang, c.examples[lang].code, c.examples[lang].expected) }}{% endif %}
+    <section id="languages"><h2 class="section-title">In each language</h2>
+      <div class="notice info">{{ icon("info", 16) }}<span>Use the language switch at the top. <b>All</b> shows the three side by side.</span></div>
+      <div class="lang-panels">
+        {% for lang, linfo in LANGS.items() if lang in c.sections %}
+        <div class="lp" data-l="{{ lang }}">
+          <h3 class="lp-title lt-{{ lang }}">{{ lang_badge(lang) }} {{ linfo.name }}</h3>
+          <article class="prose" data-code-lang="{{ lang }}">{{ c.sections[lang] | md }}</article>
+          {% if lang in c.examples %}<h4 class="try-it">{{ icon("code", 15) }} Try it: edit and run</h4>{{ runner(lang, c.examples[lang].code, c.examples[lang].expected) }}{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if c.compare %}
+    <section id="compare"><h2 class="section-title">Side-by-side comparison</h2>
+      <div class="table-wrap"><table class="compare">
+        <tr><th></th>{% for lang, linfo in LANGS.items() %}<th>{{ lang_badge(lang) }} {{ linfo.name }}</th>{% endfor %}</tr>
+        {% for row in c.compare %}<tr><th>{{ row[0] }}</th>{% for cell in row[1:] %}<td>{{ cell | md }}</td>{% endfor %}</tr>{% endfor %}
+      </table></div>
+    </section>
+    {% endif %}
+
+    {% if c.quiz %}
+    <section id="quiz"><h2 class="section-title">Quick check</h2>
+      <div class="quiz-wrap" data-quiz>
+        {% for q in c.quiz %}
+        <fieldset class="question card quiz" data-answer="{{ q.answer }}">
+          <legend class="muted">Question {{ loop.index }} of {{ c.quiz|length }}</legend>
+          <div class="q-text prose">{{ q.q | md }}</div>
+          <div class="options">
+            {% for opt in q.options %}<button type="button" class="option quiz-opt" data-i="{{ loop.index0 }}"><span class="letter">{{ "ABCDEFG"[loop.index0] }}</span><span class="opt-text">{{ opt }}</span></button>{% endfor %}
+          </div>
+          <div class="explain quiz-explain" hidden><div class="prose">{{ q.explain | md }}</div></div>
+        </fieldset>
+        {% endfor %}
+        <div class="score card" data-score hidden></div>
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="finish card">
+      <div><b>Got it?</b><p class="muted small">Mark it and it counts towards your progress and streak.</p></div>
+      {{ complete_button('c:' ~ c.slug, "Mark as understood", "Understood") }}
     </div>
-    {% endfor %}
+
+    {% set first_project = nav_projects[0] if nav_projects else None %}
+    {{ prevnext_nav(
+        (url_for('concept', slug=prev.slug), "Previous", prev.icon ~ " " ~ prev.title) if prev else None,
+        (url_for('concept', slug=next.slug), "Next", next.icon ~ " " ~ next.title) if next
+          else ((url_for('project', slug=first_project.slug), "Now build something", first_project.icon ~ " " ~ first_project.title) if first_project else None)) }}
   </div>
-</section>
 
-{% if c.compare %}
-<section id="compare"><h2>Side-by-side comparison</h2>
-  <div class="table-wrap"><table class="compare">
-    <tr><th></th>{% for lang, info in LANGS.items() %}<th>{{ info.icon }} {{ info.name }}</th>{% endfor %}</tr>
-    {% for row in c.compare %}<tr><th>{{ row[0] }}</th>{% for cell in row[1:] %}<td>{{ cell | md }}</td>{% endfor %}</tr>{% endfor %}
-  </table></div>
-</section>
-{% endif %}
-
-{% if c.quiz %}
-<section id="quiz"><h2>Quick check</h2>
-  {% for q in c.quiz %}{% set qi = loop.index0 %}
-  <div class="card quiz" data-answer="{{ q.answer }}">
-    <p><b>{{ loop.index }}.</b> {{ q.q | md }}</p>
-    {% for opt in q.options %}<button class="btn quiz-opt" data-i="{{ loop.index0 }}">{{ opt }}</button>{% endfor %}
-    <div class="quiz-explain" hidden>{{ q.explain | md }}</div>
-  </div>
-  {% endfor %}
-</section>
-{% endif %}
-
-<div class="row" style="margin-top:28px"><label class="btn"><input type="checkbox" data-complete="c:{{ c.slug }}"> Mark this concept as understood</label></div>
-<nav class="prevnext">
-  {% if prev %}<a class="card" href="{{ url_for('concept', slug=prev.slug) }}"><small>← Previous</small>{{ prev.icon }} {{ prev.title }}</a>{% else %}<span></span>{% endif %}
-  {% if next %}<a class="card right" href="{{ url_for('concept', slug=next.slug) }}"><small>Next →</small>{{ next.icon }} {{ next.title }}</a>
-  {% elif nav_projects %}<a class="card right" href="{{ url_for('project', slug=nav_projects[0].slug) }}"><small>Now build something →</small>{{ nav_projects[0].icon }} {{ nav_projects[0].title }}</a>{% endif %}
-</nav>
+  <aside class="toc" aria-label="On this page">
+    <div class="toc-title">On this page</div>
+    <ul>{% for id, label in toc %}<li><a href="#{{ id }}">{{ label }}</a></li>{% endfor %}</ul>
+  </aside>
+</div>
 {% endblock %}
 {% block scripts %}
 {% for s in ['trace', 'dispatch', 'access', 'builder'] %}<script src="{{ url_for('static', filename='widgets/' ~ s ~ '.js') }}"></script>{% endfor %}

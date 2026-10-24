@@ -1,13 +1,33 @@
 {% extends "base.html" %}
+{% from "_macros.html" import prevnext as prevnext_nav, complete_button, crumb with context %}
+{% from "_icons.html" import icon, lang_badge %}
 {% block title %}{{ lesson.title }} - {{ LANGS[lang].name }}{% endblock %}
+{% block page_id %}b:{{ lang }}/{{ lesson.slug }}{% endblock %}
+{% block crumbs %}{{ crumb(LANGS[lang].name ~ " basics", url_for('track', lang=lang), first=True) }}{{ crumb(lesson.title) }}{% endblock %}
 {% block content %}
-<p class="crumbs"><a href="{{ url_for('track', lang=lang) }}">{{ LANGS[lang].icon }} {{ LANGS[lang].name }} basics</a> · {{ lesson.order }}</p>
-<h1>{{ lesson.title }}</h1>
-<p class="lead">{{ lesson.summary }}</p>
-<article class="prose" data-code-lang="{{ lang }}">{{ lesson.body | md }}</article>
-<nav class="prevnext">
-  {% if prev %}<a class="card" href="{{ url_for('lesson', lang=lang, slug=prev.slug) }}"><small>← Previous</small>{{ prev.title }}</a>{% else %}<span></span>{% endif %}
-  {% if next %}<a class="card right" href="{{ url_for('lesson', lang=lang, slug=next.slug) }}"><small>Next →</small>{{ next.title }}</a>
-  {% else %}<a class="card right" href="{{ url_for('concept', slug=nav_concepts[0].slug) }}"><small>Done with the basics →</small>Start the OOP concepts</a>{% endif %}
-</nav>
+{% set info = (course|selectattr("id", "equalto", "b:" ~ lang ~ "/" ~ lesson.slug)|first) %}
+<header class="page-head">
+  <span class="eyebrow">{{ lang_badge(lang) }} {{ LANGS[lang].name }} basics · lesson {{ lesson.order }} of {{ nav_basics[lang]|length }}</span>
+  <h1>{{ lesson.title }}</h1>
+  <p class="lead">{{ lesson.summary }}</p>
+  <div class="meta-row">
+    <span class="pill">{{ icon("clock", 13) }} {{ info.minutes }} min</span>
+    <span class="pill good" data-done-pill="b:{{ lang }}/{{ lesson.slug }}" hidden>{{ icon("check", 13) }} done</span>
+  </div>
+</header>
+
+<div class="with-toc">
+  <div class="lesson-body">
+    <article class="prose" data-code-lang="{{ lang }}" data-toc-source>{{ lesson.body | md }}</article>
+    <div class="finish card">
+      <div><b>Finished reading?</b><p class="muted small">Run the examples first, then mark it done.</p></div>
+      {{ complete_button('b:' ~ lang ~ '/' ~ lesson.slug) }}
+    </div>
+    {{ prevnext_nav(
+        (url_for('lesson', lang=lang, slug=prev.slug), "Previous", prev.title) if prev else None,
+        (url_for('lesson', lang=lang, slug=next.slug), "Next", next.title) if next
+          else (url_for('concept', slug=nav_concepts[0].slug), "Done with the basics", "Start the OOP concepts")) }}
+  </div>
+  <aside class="toc" aria-label="On this page" data-toc-auto><div class="toc-title">On this page</div><ul></ul></aside>
+</div>
 {% endblock %}

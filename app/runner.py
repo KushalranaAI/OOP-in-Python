@@ -36,7 +36,8 @@ def _clip(text: str) -> str:
 def _exec(cmd: list[str], cwd: str, timeout: int) -> tuple[int | None, str, str]:
     env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONDONTWRITEBYTECODE": "1"}
     try:
-        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout, env=env, stdin=subprocess.DEVNULL)
+        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           timeout=timeout, env=env, stdin=subprocess.DEVNULL)
         return p.returncode, _clip(p.stdout), _clip(p.stderr)
     except subprocess.TimeoutExpired as e:
         out = e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
@@ -56,7 +57,7 @@ def run(lang: str, code: str) -> dict:
     with tempfile.TemporaryDirectory(prefix="oop-run-") as tmp:
         if lang == "python":
             Path(tmp, "main.py").write_text(code, encoding="utf-8")
-            rc, out, err = _exec([tool, "-I", "main.py"], tmp, RUN_TIMEOUT)
+            rc, out, err = _exec([tool, "-I", "-X", "utf8", "main.py"], tmp, RUN_TIMEOUT)   # -I ignores PYTHONIOENCODING
         elif lang == "javascript":
             Path(tmp, "main.js").write_text(code, encoding="utf-8")
             rc, out, err = _exec([tool, "main.js"], tmp, RUN_TIMEOUT)

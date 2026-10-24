@@ -14,21 +14,21 @@
       .tr-code { font-family: var(--mono); font-size: 13px; background: var(--panel-2); border-radius: 10px; padding: 8px 0; overflow-x: auto; }
       .tr-line { display: flex; white-space: pre; padding: 0 10px; }
       .tr-line .n { color: var(--muted); width: 28px; flex: none; user-select: none; }
-      .tr-line.cur { background: rgba(124,58,237,.18); box-shadow: inset 3px 0 var(--accent); }
-      .tr-line.prev { background: rgba(124,58,237,.06); }
+      .tr-line.cur { background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: inset 3px 0 var(--accent); }
+      .tr-line.prev { background: color-mix(in srgb, var(--accent) 6%, transparent); }
       .tr-mem { position: relative; display: grid; grid-template-columns: 1fr 1.2fr; gap: 26px; align-items: start; min-height: 120px; }
       .tr-col h5 { margin: 0 0 6px; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
       .tr-frame, .tr-obj { border: 1.5px solid var(--border); border-radius: 10px; background: var(--panel); margin-bottom: 10px; font-family: var(--mono); font-size: 12.5px; }
       .tr-frame > .t, .tr-obj > .t { padding: 3px 8px; border-bottom: 1px solid var(--border); background: var(--panel-2); border-radius: 9px 9px 0 0; font-weight: 700; }
-      .tr-obj.new { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,.15); }
+      .tr-obj.new { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
       .tr-obj.freed { opacity: .45; border-style: dashed; }
       .tr-obj.freed > .t::after { content: " (freed)"; color: var(--bad); font-weight: 400; }
-      .tr-obj.kind-class > .t { background: rgba(14,165,233,.12); }
+      .tr-obj.kind-class > .t { background: var(--cpp-soft); }
       .tr-row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 8px; border-top: 1px dotted var(--border); align-items: center; }
       .tr-row:first-of-type { border-top: none; }
       .tr-row .v { color: var(--accent); max-width: 60%; overflow: hidden; text-overflow: ellipsis; }
       .tr-row .ref { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); display: inline-block; }
-      .tr-row.changed { background: rgba(250, 204, 21, .18); }
+      .tr-row.changed { background: var(--warn-soft); }
       .tr-inline { margin: 2px 6px 6px; }
       .tr-svg { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
       .tr-note { margin-top: 10px; padding: 10px 12px; background: var(--accent-soft); border-radius: 10px; min-height: 44px; }

@@ -1,66 +1,134 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon, ring, status, lang_badge with context %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
-<section class="hero">
-  <p class="eyebrow">Object-oriented programming · 3 languages · interactive</p>
-  <h1>Understand <span class="grad">objects</span> from the inside, in Python, C++ and JavaScript.</h1>
-  <p class="lead">Learn what a class really is, how an object is created in memory, why <code>self</code>, <code>this</code> and
-    <code>this-&gt;</code> differ, how a method call finds the right code (MRO, vtables, prototype chains), and how to design
-    programs with objects. Every idea is shown in all three languages, with diagrams you can step through, and code you can edit and run.</p>
-  <div class="row">
-    <a class="btn primary" href="{{ url_for('concept', slug=nav_concepts[0].slug) }}">Start the OOP concepts →</a>
-    <a class="btn" href="{{ url_for('track', lang='python') }}">I need the basics first</a>
-    <a class="btn" href="{{ url_for('playground') }}">▶ Open the playground</a>
-  </div>
-  <div class="toolchains">
-    {% for lang, info in LANGS.items() %}<span class="pill {{ 'ok' if toolchains[lang] else 'warn' }}">{{ info.icon }} {{ info.name }}: {{ 'can run here' if toolchains[lang] else 'not installed - expected output shown' }}</span>{% endfor %}
-  </div>
-</section>
+{% set all_ids = course|map(attribute="id")|list %}
+{% set WIDGETS = {'trace': ('Step-through memory', 'play'), 'dispatch': ('Dispatch explorer', 'map'), 'access': ('Access matrix', 'target'), 'builder': ('Class builder', 'builder')} %}
+<div class="dashboard">
+  <section class="hero card">
+    <div class="hero-text">
+      <span class="eyebrow" data-hero-eyebrow>Object-oriented programming · 3 languages</span>
+      <h1 data-hero-title>Understand objects from the inside.</h1>
+      <p class="lead" data-hero-lead>See what a class really is, how an object is born in memory, why <code>self</code>, <code>this</code> and
+        <code>this-&gt;</code> differ, and how a method call finds its code, in Python, C++ and JavaScript side by side.
+        Step through diagrams, edit and run every program, then build five projects.</p>
+      <div class="hero-actions">
+        <a class="btn primary lg" data-hero-cta href="{{ url_for('concept', slug=nav_concepts[0].slug) }}">{{ icon("play", 18) }} <span>Start with: {{ nav_concepts[0].title }}</span></a>
+        <a class="btn lg" href="{{ url_for('track', lang='python') }}">{{ icon("book", 18) }} I need the basics first</a>
+      </div>
+    </div>
+    <div class="hero-ring">
+      {% call ring(all_ids, 150, 12) %}<span class="ring-big"><span data-pct>0</span><small>%</small></span>{% endcall %}
+      <span class="muted small"><span data-count='{{ all_ids|tojson|forceescape }}'></span> pages done</span>
+    </div>
+  </section>
 
-<section>
-  <h2>The path</h2>
+  <section class="stats" aria-label="Your stats">
+    <div class="stat-card card"><span class="stat-icon">{{ icon("circle-check") }}</span><div><div class="stat-value" data-stat="done">0</div><div class="muted small">Lessons &amp; concepts done</div></div></div>
+    <div class="stat-card card"><span class="stat-icon">{{ icon("clock") }}</span><div><div class="stat-value" data-stat="time">0 min</div><div class="muted small">Time invested</div></div></div>
+    <div class="stat-card card"><span class="stat-icon">{{ icon("flame") }}</span><div><div class="stat-value" data-stat="streak">0</div><div class="muted small">Day streak <span data-stat="best"></span></div></div></div>
+    <div class="stat-card card"><span class="stat-icon">{{ icon("rocket") }}</span><div><div class="stat-value" data-stat="projects">0 / {{ nav_projects|length }}</div><div class="muted small">Projects finished</div></div></div>
+  </section>
+
+{% if hosted %}
+  <section class="card toolchain">
+    <span class="stat-icon accent">{{ icon("terminal", 20) }}</span>
+    <div>
+      <b>Run every program on your machine</b>
+      <p class="muted small">This hosted copy shows each program's expected output. The local app runs and edits real Python, C++ and JavaScript.</p>
+    </div>
+    <a class="btn primary" href="{{ REPO_URL }}" target="_blank" rel="noopener">{{ icon("download", 16) }} Get it on GitHub</a>
+  </section>
+  {% else %}
+  <section class="card toolchain">
+    <span class="stat-icon accent">{{ icon("terminal", 20) }}</span>
+    <div>
+      <b>Every program runs on your machine</b>
+      <p class="muted small">Press <b>Run</b> on any code block, or <kbd>Ctrl</kbd> + <kbd>Enter</kbd> in an editor. Missing a toolchain? You'll see the expected output instead.</p>
+    </div>
+    <div class="chips">{% for lang, info in LANGS.items() %}<span class="pill {{ 'good' if toolchains[lang] else 'warn' }}" title="{{ toolchains[lang] or 'Not found on PATH' }}">{{ icon("circle-check" if toolchains[lang] else "alert", 13) }} {{ info.name }}{{ '' if toolchains[lang] else ': not installed' }}</span>{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  <section class="card ai-promo" data-ai-promo hidden>
+    <span class="stat-icon accent">{{ icon("sparkles", 20) }}</span>
+    <div>
+      <b>Add an AI tutor in one minute</b>
+      <p class="muted small">Highlight any sentence or press <b>Explain</b> on a code block and ask about it. Use a free local model (Ollama),
+        your own Claude / OpenAI / Gemini key{% if not hosted %}, or keys you keep in <code>.env</code> on this computer, Azure OpenAI included{% endif %}.</p>
+    </div>
+    <button type="button" class="btn primary" data-ai-connect>{{ icon("key", 16) }} Connect AI</button>
+  </section>
+
+  <section data-upnext-section>
+    <div class="section-head"><h2>Up next</h2><a href="{{ url_for('progress') }}" class="small">See your progress {{ icon("arrow-right", 14) }}</a></div>
+    <div class="grid" data-upnext>
+      {% for c in course|selectattr("kind", "equalto", "concept")|list|batch(3)|first %}
+      <a href="{{ c.href }}" class="card link-card lift"><span class="muted small">{{ c.group }}</span><b class="card-title">{{ c.title }}</b><span class="muted small clamp">{{ c.summary }}</span><span class="card-foot"><span class="muted small">{{ icon("clock", 12) }} {{ c.minutes }} min</span></span></a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>① Basics: the prerequisites</h2><span class="muted small">Pick the language you know least</span></div>
+    <div class="grid">
+      {% for lang, info in LANGS.items() %}{% set ids = course|selectattr("lang", "defined")|selectattr("lang", "equalto", lang)|map(attribute="id")|list %}
+      <a class="card link-card lift part-card lang-card lc-{{ lang }}" href="{{ url_for('track', lang=lang) }}">
+        <div class="part-top">{% call ring(ids, 46, 4) %}{{ lang_badge(lang) }}{% endcall %}<span class="muted small">{{ ids|length }} lessons</span></div>
+        <b class="card-title">{{ info.name }} basics</b>
+        <span class="muted small clamp">{% for l in nav_basics[lang] %}{{ l.title }}{{ ' · ' if not loop.last }}{% endfor %}</span>
+        <span class="card-foot"><span class="pill" data-count='{{ ids|tojson|forceescape }}' data-count-suffix=" done"></span></span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>② OOP concepts</h2><a href="{{ url_for('concepts_index') }}" class="small">All concepts {{ icon("arrow-right", 14) }}</a></div>
+    <div class="grid">
+      {% for c in nav_concepts %}
+      <a class="card link-card lift concept-card" href="{{ url_for('concept', slug=c.slug) }}">
+        <div class="part-top"><span class="concept-num">{{ '%02d'|format(c.order) }}</span>{{ status('c:' ~ c.slug, 18) }}</div>
+        <b class="card-title">{{ c.icon }} {{ c.title }}</b>
+        <span class="muted small clamp">{{ c.summary }}</span>
+        {% if c.widgets %}<span class="card-foot">{% for w in c.widgets %}{% set wl = WIDGETS.get(w.type, (w.type, 'sliders')) %}<span class="pill accent">{{ icon(wl[1], 12) }} {{ wl[0] }}</span>{% endfor %}</span>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>③ Build real things</h2><a href="{{ url_for('projects_index') }}" class="small">All projects {{ icon("arrow-right", 14) }}</a></div>
+    <div class="grid projects-grid">
+      {% for pr in nav_projects %}{% set step_ids = [] %}{% for s in pr.steps %}{% set _ = step_ids.append('s:' ~ pr.slug ~ '/' ~ loop.index) %}{% endfor %}
+      <a class="card link-card lift" href="{{ url_for('project', slug=pr.slug) }}">
+        <span class="card-foot" style="margin-top:0;padding-top:0"><span class="pill {{ pr.level|lower }}">{{ pr.level }}</span><span class="muted small">{{ pr.steps|length }} steps</span><span class="spacer"></span>{{ status('p:' ~ pr.slug, 18) }}</span>
+        <b class="card-title">{{ pr.icon }} {{ pr.title }}</b>
+        <span class="muted small clamp">{{ pr.summary }}</span>
+        <div class="bar" data-bar='{{ step_ids|tojson|forceescape }}' data-bar-done="p:{{ pr.slug }}"><div></div></div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>How to learn here</h2></div>
+    <ol class="how">
+      {% for ic, t, d in [("book", "Read", "Each chapter starts with why it matters, then the idea with diagrams, then each language."),
+                          ("sliders", "Step through", "Watch an object get created in memory, line by line, and see how a method call is found."),
+                          ("code", "Edit and run", "Every program is editable and runs locally. Break it on purpose and see what happens."),
+                          ("rocket", "Build", "Finish with five projects, built step by step and identical in all three languages.")] %}
+      <li class="card"><span class="stat-icon">{{ icon(ic) }}</span><b>{{ t }}</b><span class="muted small">{{ d }}</span></li>
+      {% endfor %}
+    </ol>
+    <details class="pipeline">
+      <summary>The path through the course {{ icon("chevron-down", 14) }}</summary>
 {{ '''flowchart LR
   B["① Basics<br/>variables, functions,<br/>collections, references"] --> C1["② Classes & objects<br/>how an object is born"]
   C1 --> C2["encapsulation · lifecycle<br/>inheritance · polymorphism"]
   C2 --> C3["abstraction · composition<br/>operators · design patterns"]
   C3 --> P["③ Projects<br/>step-by-step, in all 3 languages"]''' | mermaid }}
-</section>
-
-<section>
-  <h2>① Basics: the prerequisites</h2>
-  <p class="muted">Pick the language(s) you know least. Each track covers exactly what the OOP chapters assume.</p>
-  <div class="grid-3">
-    {% for lang, info in LANGS.items() %}
-    <a class="card lang-card" style="--lc: {{ info.color }}" href="{{ url_for('track', lang=lang) }}">
-      <div class="big-icon">{{ info.icon }}</div><h3>{{ info.name }} basics</h3>
-      <p>{% for l in nav_basics[lang] %}{{ l.title }}{{ ' · ' if not loop.last }}{% endfor %}</p>
-    </a>
-    {% endfor %}
-  </div>
-</section>
-
-<section>
-  <h2>② OOP concepts</h2>
-  <div class="grid-cards">
-    {% for c in nav_concepts %}
-    <a class="card" href="{{ url_for('concept', slug=c.slug) }}">
-      <div class="card-top"><span class="icon">{{ c.icon }}</span><span class="num">{{ '%02d'|format(c.order) }}</span><span class="dot" data-done="c:{{ c.slug }}"></span></div>
-      <h3>{{ c.title }}</h3><p>{{ c.summary }}</p>
-      {% if c.widgets %}<div class="pills">{% for w in c.widgets %}<span class="pill accent">{{ {'trace':'🎞️ step-through','dispatch':'🧭 dispatch explorer','access':'🔐 access matrix','builder':'🏗️ class builder'}.get(w.type, w.type) }}</span>{% endfor %}</div>{% endif %}
-    </a>
-    {% endfor %}
-  </div>
-</section>
-
-<section>
-  <h2>③ Projects</h2>
-  <div class="grid-cards">
-    {% for p in nav_projects %}
-    <a class="card" href="{{ url_for('project', slug=p.slug) }}">
-      <div class="card-top"><span class="icon">{{ p.icon }}</span><span class="num">{{ p.level }}</span><span class="dot" data-done="p:{{ p.slug }}"></span></div>
-      <h3>{{ p.title }}</h3><p>{{ p.summary }}</p>
-      <div class="pills">{% for lang in p.implementations %}<span class="pill">{{ LANGS[lang].icon }} {{ LANGS[lang].name }}</span>{% endfor %}</div>
-    </a>
-    {% endfor %}
-  </div>
-</section>
+    </details>
+  </section>
+</div>
 {% endblock %}

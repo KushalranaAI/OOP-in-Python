@@ -1,22 +1,42 @@
+{% from "_icons.html" import icon, lang_badge %}
 {# A runnable, editable code box. #}
 {% macro runner(lang, code, expected="", filename=None, height=None) -%}
-<div class="runner" data-runner="{{ lang }}">
-  <div class="runner-bar">
-    <span class="file">{{ LANGS[lang].icon }} {{ filename or ('main' ~ LANGS[lang].ext) }}</span>
-    <span class="spacer"></span>
-    <button class="btn small ghost" data-reset title="Undo your edits">↺ Reset</button>
-    <button class="btn small primary" data-run title="Ctrl/⌘ + Enter">▶ Run</button>
+<div class="runner codeblock" data-runner="{{ lang }}">
+  <div class="codeblock-bar">
+    <span class="codeblock-lang">{{ lang_badge(lang) }} {{ filename or ('main' ~ LANGS[lang].ext) }}</span>
+    <span class="codeblock-actions">
+      <button type="button" class="chip-btn" data-copy title="Copy the code">{{ icon("copy", 13) }}<span>Copy</span></button>
+      <button type="button" class="chip-btn" data-reset title="Undo your edits">{{ icon("reset", 13) }}<span>Reset</span></button>
+      <button type="button" class="chip-btn run" data-run title="Run (Ctrl/⌘ + Enter)">{{ icon("play", 13) }}<span>Run</span></button>
+    </span>
   </div>
   <div class="editor" {% if height %}style="height:{{ height }}"{% endif %}>
     <pre aria-hidden="true"><code class="language-{{ lang }}"></code></pre>
-    <textarea spellcheck="false" autocapitalize="off" autocomplete="off" data-original="{{ code }}">{{ code }}</textarea>
+    <textarea spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="{{ LANGS[lang].name }} code editor" data-original="{{ code }}">{{ code }}</textarea>
   </div>
-  <pre class="output" hidden></pre>
-  {% if expected %}<details class="expected"><summary>Expected output</summary><pre>{{ expected }}</pre></details>{% endif %}
+  <div class="run-out" hidden><div class="run-status"></div><pre class="output"></pre></div>
+  {% if expected %}<details class="expected"><summary>{{ icon("chevron-right", 14) }} Expected output</summary><pre>{{ expected }}</pre></details>{% endif %}
 </div>
 {%- endmacro %}
 
 {# Three versions of something, shown according to the language switch. #}
 {% macro lang_panels() -%}
 <div class="lang-panels">{{ caller() }}</div>
+{%- endmacro %}
+
+{# Previous / next cards at the end of a page. Each side is (href, eyebrow, title) or None. #}
+{% macro prevnext(prev, next) -%}
+<nav class="prevnext" aria-label="Previous and next">
+  {% if prev %}<a class="card link-card lift" href="{{ prev[0] }}"><span class="muted small">{{ icon("arrow-left", 14) }} {{ prev[1] }}</span><b>{{ prev[2] }}</b></a>{% else %}<span></span>{% endif %}
+  {% if next %}<a class="card link-card lift right" href="{{ next[0] }}"><span class="muted small">{{ next[1] }} {{ icon("arrow-right", 14) }}</span><b>{{ next[2] }}</b></a>{% endif %}
+</nav>
+{%- endmacro %}
+
+{# "Mark as done" - toggled and remembered by app.js #}
+{% macro complete_button(id, label="Mark as complete", done_label="Completed") -%}
+<button type="button" class="btn lg complete-btn" data-complete="{{ id }}" data-label="{{ label }}" data-done-label="{{ done_label }}">{{ icon("circle-check", 18) }}<span>{{ label }}</span></button>
+{%- endmacro %}
+
+{% macro crumb(label, href=None, first=False) -%}
+<span class="crumb">{% if not first %}{{ icon("chevron-right", 14, "sep") }}{% endif %}{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</span>
 {%- endmacro %}

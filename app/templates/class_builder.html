@@ -1,8 +1,14 @@
 {% extends "base.html" %}
+{% from "_macros.html" import crumb %}
+{% from "_icons.html" import icon %}
 {% block title %}Class builder{% endblock %}
+{% block crumbs %}{{ crumb("Class builder", first=True) }}{% endblock %}
 {% block content %}
-<h1>🏗️ Class builder</h1>
-<p class="lead">Design a class with a parent, fields and methods, and watch the same design appear as Python, C++ and JavaScript code, with a class diagram.</p>
+<header class="page-head">
+  <span class="eyebrow">{{ icon("builder", 14) }} Interactive tool</span>
+  <h1>Class builder</h1>
+  <p class="lead">Design a class with a parent, fields and methods, and watch the same design appear as Python, C++ and JavaScript code, with a class diagram.</p>
+</header>
 <div class="widget" data-widget="builder" data-config='{"full": true}'></div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='widgets/builder.js') }}"></script>{% endblock %}

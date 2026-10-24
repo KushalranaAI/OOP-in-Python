@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import crumb %}
+{% from "_icons.html" import icon, ring, status with context %}
+{% block title %}OOP concepts{% endblock %}
+{% block crumbs %}{{ crumb("OOP concepts", first=True) }}{% endblock %}
+{% block content %}
+{% set items = course|selectattr("kind", "equalto", "concept")|list %}
+{% set ids = items|map(attribute="id")|list %}
+<header class="page-head with-ring">
+  <div>
+    <span class="eyebrow">{{ icon("blocks", 14) }} ② OOP concepts</span>
+    <h1>Every core idea, in three languages</h1>
+    <p class="lead">Eleven chapters, from why objects exist to design patterns. Each has diagrams, a section per language, runnable code, a comparison table and a quick check.</p>
+  </div>
+  <div class="section-progress card">
+    {% call ring(ids, 64, 6) %}<span class="ring-big"><span data-pct>0</span><small>%</small></span>{% endcall %}
+    <div><b data-count='{{ ids|tojson|forceescape }}'></b><div class="muted small">understood</div></div>
+  </div>
+</header>
+<ol class="lesson-list">
+  {% for c in items %}
+  <li><a class="lesson-row" href="{{ c.href }}">
+    <span class="lesson-num" data-num="{{ c.id }}">{{ '%02d'|format(c.order) }}</span>
+    <span class="lesson-main"><b>{{ c.icon }} {{ c.title }}</b><span class="muted small">{{ c.summary }}</span></span>
+    <span class="lesson-meta"><span class="muted small">{{ icon("clock", 12) }} {{ c.minutes }} min</span></span>
+    {{ icon("chevron-right", 18, "go") }}
+  </a></li>
+  {% endfor %}
+</ol>
+{% endblock %}
