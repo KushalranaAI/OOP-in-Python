@@ -1,0 +1,5 @@
+coffee + cake = 7.75 USD | coffee * 3 = 10.50 USD
+coffee < cake: true | coffee == Money(350): true
+size: 3 | first: 3.50 USD | total: 8.75 USD
+cheapest: 1.00 USD | dearest: 4.25 USD
+bool(Money(0)): false

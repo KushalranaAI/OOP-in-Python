@@ -1,0 +1,9 @@
+str: 3.50 USD | repr: Money(350, 'USD')
+coffee + cake = 7.75 USD | coffee * 3 = 10.50 USD
+coffee < cake: True | coffee >= cake: False (from total_ordering)
+equal values: True | same object: False
+as set keys: 2 unique amounts
+len: 3 | first: 3.50 USD | contains cake: True
+sum: 8.75 USD | sorted: ['1.00 USD', '3.50 USD', '4.25 USD']
+bool(Money(0)): False
+error: can't mix USD and EUR

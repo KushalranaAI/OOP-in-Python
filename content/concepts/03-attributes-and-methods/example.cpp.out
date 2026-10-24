@@ -1,0 +1,6 @@
+21.5 C = 70.7 F
+100 C = 212 F
+24 C = 75.2 F
+freezing at -3? true
+readings taken: 2
+sizeof(Temperature) = 8 (just the double)

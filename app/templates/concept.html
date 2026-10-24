@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_macros.html" import runner with context %}
+{% block title %}{{ c.title }}{% endblock %}
+{% block content %}
+<p class="crumbs">② OOP concepts · {{ '%02d'|format(c.order) }}</p>
+<h1>{{ c.icon }} {{ c.title }}</h1>
+<p class="lead">{{ c.summary }}</p>
+{% if c.why %}<div class="callout"><b>Why it matters.</b> {{ c.why }}</div>{% endif %}
+
+<nav class="toc">
+  <a href="#idea">The idea</a>{% if c.widgets %}<a href="#interactive">Interactive</a>{% endif %}<a href="#languages">In each language</a>
+  {% if c.compare %}<a href="#compare">Compare</a>{% endif %}{% if c.quiz %}<a href="#quiz">Quick check</a>{% endif %}
+</nav>
+
+<section id="idea"><h2>The idea</h2><article class="prose">{{ c.body | md }}</article></section>
+
+{% if c.widgets %}
+<section id="interactive"><h2>Interactive</h2>
+  {% for w in c.widgets %}
+    {% if w.type == 'trace' %}
+      <div class="lang-panels">{% for lang, name in w.traces.items() %}
+        <div class="lp" data-l="{{ lang }}"><div class="widget" data-widget="trace" data-config='{{ traces[name]|tojson|forceescape }}'></div></div>
+      {% endfor %}</div>
+    {% else %}
+      <div class="widget" data-widget="{{ w.type }}" data-config='{{ w|tojson|forceescape }}'></div>
+    {% endif %}
+  {% endfor %}
+</section>
+{% endif %}
+
+<section id="languages"><h2>In each language</h2>
+  <p class="muted">Use the language switch at the top. <b>⇄ All</b> shows the three side by side.</p>
+  <div class="lang-panels">
+    {% for lang, info in LANGS.items() if lang in c.sections %}
+    <div class="lp" data-l="{{ lang }}">
+      <h3 class="lp-title" style="--lc: {{ info.color }}">{{ info.icon }} {{ info.name }}</h3>
+      <article class="prose" data-code-lang="{{ lang }}">{{ c.sections[lang] | md }}</article>
+      {% if lang in c.examples %}<h4>Try it - edit and run</h4>{{ runner(lang, c.examples[lang].code, c.examples[lang].expected) }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if c.compare %}
+<section id="compare"><h2>Side-by-side comparison</h2>
+  <div class="table-wrap"><table class="compare">
+    <tr><th></th>{% for lang, info in LANGS.items() %}<th>{{ info.icon }} {{ info.name }}</th>{% endfor %}</tr>
+    {% for row in c.compare %}<tr><th>{{ row[0] }}</th>{% for cell in row[1:] %}<td>{{ cell | md }}</td>{% endfor %}</tr>{% endfor %}
+  </table></div>
+</section>
+{% endif %}
+
+{% if c.quiz %}
+<section id="quiz"><h2>Quick check</h2>
+  {% for q in c.quiz %}{% set qi = loop.index0 %}
+  <div class="card quiz" data-answer="{{ q.answer }}">
+    <p><b>{{ loop.index }}.</b> {{ q.q | md }}</p>
+    {% for opt in q.options %}<button class="btn quiz-opt" data-i="{{ loop.index0 }}">{{ opt }}</button>{% endfor %}
+    <div class="quiz-explain" hidden>{{ q.explain | md }}</div>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<div class="row" style="margin-top:28px"><label class="btn"><input type="checkbox" data-complete="c:{{ c.slug }}"> Mark this concept as understood</label></div>
+<nav class="prevnext">
+  {% if prev %}<a class="card" href="{{ url_for('concept', slug=prev.slug) }}"><small>← Previous</small>{{ prev.icon }} {{ prev.title }}</a>{% else %}<span></span>{% endif %}
+  {% if next %}<a class="card right" href="{{ url_for('concept', slug=next.slug) }}"><small>Next →</small>{{ next.icon }} {{ next.title }}</a>
+  {% elif nav_projects %}<a class="card right" href="{{ url_for('project', slug=nav_projects[0].slug) }}"><small>Now build something →</small>{{ nav_projects[0].icon }} {{ nav_projects[0].title }}</a>{% endif %}
+</nav>
+{% endblock %}
+{% block scripts %}
+{% for s in ['trace', 'dispatch', 'access', 'builder'] %}<script src="{{ url_for('static', filename='widgets/' ~ s ~ '.js') }}"></script>{% endfor %}
+{% endblock %}

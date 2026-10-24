@@ -1,0 +1,5 @@
+balance: 100
+still: 100
+rule enforced: deposit must be positive
+JSON shows only public data: {"owner":"Ada"}
+is an Account? true false

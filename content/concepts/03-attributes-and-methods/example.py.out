@@ -1,0 +1,7 @@
+a = 21.5 °C = 70.7 °F
+b = 100.0 °C
+freezing at -3? True
+readings taken: 2
+Temperature.describe(a): 21.5 °C
+detached bound method still works: 21.5 °C
+class value unchanged: 2 | a's shadow copy: 999

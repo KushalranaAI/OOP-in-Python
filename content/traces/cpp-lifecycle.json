@@ -1,0 +1,175 @@
+{
+ "title": "C++: RAII - destructors run at the closing brace",
+ "lang": "cpp",
+ "code": "#include <iostream>\n#include <memory>\n#include <string>\n\nclass Resource {\npublic:\n    explicit Resource(std::string name) : name_(std::move(name)) { std::cout << \"open \" << name_ << \"\\n\"; }\n    ~Resource() { std::cout << \"close \" << name_ << \"\\n\"; }\nprivate:\n    std::string name_;\n};\n\nint main() {\n    Resource a(\"A\");\n    {\n        Resource b(\"B\");\n        auto c = std::make_unique<Resource>(\"C\");\n    }                                    // c, then b, are destroyed here\n    std::cout << \"end of main\\n\";\n}                                        // a is destroyed here\n",
+ "steps": [
+  {
+   "line": 14,
+   "note": "`a` is constructed in main's frame.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "obj": {
+        "label": "Resource",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"A\""
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "heap": [],
+   "out": "open A"
+  },
+  {
+   "line": 16,
+   "note": "Inside the inner `{ }` block, `b` is constructed too.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "obj": {
+        "label": "Resource",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"A\""
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "{ inner block }",
+     "vars": [
+      {
+       "name": "b",
+       "obj": {
+        "label": "Resource",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"B\""
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "heap": [],
+   "out": "open A\nopen B"
+  },
+  {
+   "line": 17,
+   "note": "`std::make_unique` creates a Resource on the **heap**, owned by the smart pointer `c` (which itself lives on the stack).",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "obj": {
+        "label": "Resource",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"A\""
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "{ inner block }",
+     "vars": [
+      {
+       "name": "b",
+       "obj": {
+        "label": "Resource",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"B\""
+         }
+        ]
+       }
+      },
+      {
+       "name": "c (unique_ptr)",
+       "ref": "h"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "h",
+     "label": "Resource (heap)",
+     "fields": [
+      {
+       "name": "name_",
+       "value": "\"C\""
+      }
+     ]
+    }
+   ],
+   "out": "open A\nopen B\nopen C"
+  },
+  {
+   "line": 18,
+   "note": "At `}` every object of the block is destroyed **in reverse order of construction**: `c`'s destructor deletes the heap Resource ('close C'), then `b` ('close B'). No `delete` anywhere. This is **RAII**: *Resource Acquisition Is Initialisation*.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "obj": {
+        "label": "Resource",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"A\""
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "h",
+     "label": "Resource (heap)",
+     "fields": [
+      {
+       "name": "name_",
+       "value": "\"C\""
+      }
+     ],
+     "freed": true
+    }
+   ],
+   "out": "open A\nopen B\nopen C\nclose C\nclose B"
+  },
+  {
+   "line": 21,
+   "note": "When main ends, `a` is destroyed. The order is **deterministic**, so you know exactly when files close and locks release.",
+   "frames": [],
+   "heap": [],
+   "out": "open A\nopen B\nopen C\nclose C\nclose B\nend of main\nclose A"
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+connect A
+  using A
+disconnect A
+connect B
+disconnect B (after RuntimeError)
+  error handled - and B was still disconnected
+alias sees: ['Ada', 'Alan', 'Grace']
+shallow sees: ['Ada', 'Alan', 'Grace'] (inner list shared)
+deep sees: ['Ada', 'Alan'] (fully independent)

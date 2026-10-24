@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Object-oriented programming · 3 languages · interactive</p>
+  <h1>Understand <span class="grad">objects</span> from the inside, in Python, C++ and JavaScript.</h1>
+  <p class="lead">Learn what a class really is, how an object is created in memory, why <code>self</code>, <code>this</code> and
+    <code>this-&gt;</code> differ, how a method call finds the right code (MRO, vtables, prototype chains), and how to design
+    programs with objects. Every idea is shown in all three languages, with diagrams you can step through, and code you can edit and run.</p>
+  <div class="row">
+    <a class="btn primary" href="{{ url_for('concept', slug=nav_concepts[0].slug) }}">Start the OOP concepts →</a>
+    <a class="btn" href="{{ url_for('track', lang='python') }}">I need the basics first</a>
+    <a class="btn" href="{{ url_for('playground') }}">▶ Open the playground</a>
+  </div>
+  <div class="toolchains">
+    {% for lang, info in LANGS.items() %}<span class="pill {{ 'ok' if toolchains[lang] else 'warn' }}">{{ info.icon }} {{ info.name }}: {{ 'can run here' if toolchains[lang] else 'not installed - expected output shown' }}</span>{% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2>The path</h2>
+{{ '''flowchart LR
+  B["① Basics<br/>variables, functions,<br/>collections, references"] --> C1["② Classes & objects<br/>how an object is born"]
+  C1 --> C2["encapsulation · lifecycle<br/>inheritance · polymorphism"]
+  C2 --> C3["abstraction · composition<br/>operators · design patterns"]
+  C3 --> P["③ Projects<br/>step-by-step, in all 3 languages"]''' | mermaid }}
+</section>
+
+<section>
+  <h2>① Basics: the prerequisites</h2>
+  <p class="muted">Pick the language(s) you know least. Each track covers exactly what the OOP chapters assume.</p>
+  <div class="grid-3">
+    {% for lang, info in LANGS.items() %}
+    <a class="card lang-card" style="--lc: {{ info.color }}" href="{{ url_for('track', lang=lang) }}">
+      <div class="big-icon">{{ info.icon }}</div><h3>{{ info.name }} basics</h3>
+      <p>{% for l in nav_basics[lang] %}{{ l.title }}{{ ' · ' if not loop.last }}{% endfor %}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2>② OOP concepts</h2>
+  <div class="grid-cards">
+    {% for c in nav_concepts %}
+    <a class="card" href="{{ url_for('concept', slug=c.slug) }}">
+      <div class="card-top"><span class="icon">{{ c.icon }}</span><span class="num">{{ '%02d'|format(c.order) }}</span><span class="dot" data-done="c:{{ c.slug }}"></span></div>
+      <h3>{{ c.title }}</h3><p>{{ c.summary }}</p>
+      {% if c.widgets %}<div class="pills">{% for w in c.widgets %}<span class="pill accent">{{ {'trace':'🎞️ step-through','dispatch':'🧭 dispatch explorer','access':'🔐 access matrix','builder':'🏗️ class builder'}.get(w.type, w.type) }}</span>{% endfor %}</div>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2>③ Projects</h2>
+  <div class="grid-cards">
+    {% for p in nav_projects %}
+    <a class="card" href="{{ url_for('project', slug=p.slug) }}">
+      <div class="card-top"><span class="icon">{{ p.icon }}</span><span class="num">{{ p.level }}</span><span class="dot" data-done="p:{{ p.slug }}"></span></div>
+      <h3>{{ p.title }}</h3><p>{{ p.summary }}</p>
+      <div class="pills">{% for lang in p.implementations %}<span class="pill">{{ LANGS[lang].icon }} {{ LANGS[lang].name }}</span>{% endfor %}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

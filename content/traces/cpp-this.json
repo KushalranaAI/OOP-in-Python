@@ -1,0 +1,287 @@
+{
+ "title": "C++: the hidden this pointer and static members",
+ "lang": "cpp",
+ "code": "#include <iostream>\n\nclass Counter {\npublic:\n    void increment() { ++count; ++total; }\n    int count = 0;\n    static int total;          // one for the whole class\n};\nint Counter::total = 0;\n\nint main() {\n    Counter a, b;\n    a.increment();\n    a.increment();\n    b.increment();\n    std::cout << a.count << \" \" << b.count << \" \" << Counter::total << \"\\n\";\n}\n",
+ "steps": [
+  {
+   "line": 12,
+   "note": "`a` and `b` live in main's frame; each holds its own `count`. `Counter::total` is **static**: one variable for the whole program, outside any object.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "id": "a",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "0",
+          "changed": false
+         }
+        ]
+       }
+      },
+      {
+       "name": "b",
+       "id": "b",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "0",
+          "changed": false
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "S",
+     "label": "static storage",
+     "fields": [
+      {
+       "name": "Counter::total",
+       "value": "0",
+       "changed": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 5,
+   "note": "`a.increment()` compiles to roughly `Counter::increment(&a)`. Inside, `count` means **`this->count`**, and `this` points at a.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "id": "a",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "1",
+          "changed": true
+         }
+        ]
+       }
+      },
+      {
+       "name": "b",
+       "id": "b",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "0",
+          "changed": false
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Counter::increment",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "a"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "S",
+     "label": "static storage",
+     "fields": [
+      {
+       "name": "Counter::total",
+       "value": "1",
+       "changed": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 14,
+   "note": "Again on `a`.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "id": "a",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "2",
+          "changed": true
+         }
+        ]
+       }
+      },
+      {
+       "name": "b",
+       "id": "b",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "0",
+          "changed": false
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "S",
+     "label": "static storage",
+     "fields": [
+      {
+       "name": "Counter::total",
+       "value": "2",
+       "changed": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 5,
+   "note": "`b.increment()` - same machine code, different `this`.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "id": "a",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "2",
+          "changed": false
+         }
+        ]
+       }
+      },
+      {
+       "name": "b",
+       "id": "b",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "1",
+          "changed": true
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Counter::increment",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "b"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "S",
+     "label": "static storage",
+     "fields": [
+      {
+       "name": "Counter::total",
+       "value": "3",
+       "changed": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 16,
+   "note": "A static member function has **no** `this`; static data is reached through the class name: `Counter::total`.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "a",
+       "id": "a",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "2",
+          "changed": false
+         }
+        ]
+       }
+      },
+      {
+       "name": "b",
+       "id": "b",
+       "obj": {
+        "label": "Counter",
+        "fields": [
+         {
+          "name": "count",
+          "value": "1",
+          "changed": false
+         }
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "S",
+     "label": "static storage",
+     "fields": [
+      {
+       "name": "Counter::total",
+       "value": "3",
+       "changed": false
+      }
+     ]
+    }
+   ],
+   "out": "2 1 3"
+  }
+ ],
+ "heapLabel": "Static storage"
+}

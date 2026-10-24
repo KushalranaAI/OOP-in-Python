@@ -1,0 +1,8 @@
+template literal: 3.50 USD
+coffee.add(cake) = 7.75 USD
++coffee (number hint): 350 | coffee < cake: true
+== compares references: false | equals(): true
+JSON: {"cents":350,"currency":"USD"}
+size: 3 | total: 8.75 USD
+sorted: 1.00 USD, 3.50 USD, 4.25 USD
+error: can't mix USD and EUR

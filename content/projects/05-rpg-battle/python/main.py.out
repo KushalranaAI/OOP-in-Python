@@ -1,0 +1,94 @@
+-- round 1 --
+Grub hits Sana for 9
+Snag hits Merlin for 12
+Merlin casts Fireball!
+  Grub burns for 12
+  Snag burns for 12
+  Brute burns for 10
+  Hex burns for 12
+Sana hits Grub for 9
+Hex curses Aria with poison
+Aria takes 3 poison damage
+Aria hits Grub for 11 - Grub is defeated!
+Brute regenerates 5 HP
+Brute hits Aria for 13
+-- round 2 --
+Snag hits Aria for 5
+Merlin casts Fireball!
+  Snag burns for 8
+  Brute burns for 6
+  Hex burns for 8
+Sana hits Snag for 8
+Hex curses Merlin with poison
+Aria takes 3 poison damage
+Aria hits Snag for 15 - Snag is defeated!
+Brute regenerates 5 HP
+Brute hits Aria for 10
+-- round 3 --
+Merlin takes 3 poison damage
+Merlin poisons Brute
+Sana heals Aria for 15 (41/60)
+Hex curses Sana with poison
+Aria takes 3 poison damage
+Aria's poison wears off
+Aria hits Hex for 14
+Brute takes 4 poison damage
+Brute regenerates 5 HP
+Brute hits Aria for 10
+-- round 4 --
+Merlin takes 3 poison damage
+Merlin hits Hex for 7 - Hex is defeated!
+Sana takes 3 poison damage
+Sana heals Aria for 18 (46/60)
+Aria hits Brute for 9
+Brute takes 4 poison damage
+Brute regenerates 5 HP
+Brute hits Aria for 15
+-- round 5 --
+Merlin takes 3 poison damage
+Merlin's poison wears off
+Merlin hits Brute for 5
+Sana takes 3 poison damage
+Sana heals Merlin for 15 (32/38)
+Aria hits Brute for 12
+Brute takes 4 poison damage
+Brute's poison wears off
+Brute regenerates 5 HP
+Brute hits Merlin for 13
+-- round 6 --
+Merlin poisons Brute
+Sana takes 3 poison damage
+Sana's poison wears off
+Sana heals Merlin for 13 (32/38)
+Aria hits Brute for 12
+Brute takes 4 poison damage
+Brute regenerates 5 HP
+Brute hits Merlin for 17
+-- round 7 --
+Merlin hits Brute for 6
+Sana heals Merlin for 16 (31/38)
+Aria hits Brute for 11
+Brute takes 4 poison damage
+Brute regenerates 5 HP
+Brute hits Aria for 15
+-- round 8 --
+Merlin hits Brute for 3
+Sana heals Aria for 15 (31/60)
+Aria hits Brute for 9
+Brute takes 4 poison damage
+Brute's poison wears off
+Brute regenerates 5 HP
+Brute hits Aria for 14
+-- round 9 --
+Merlin poisons Brute
+Sana heals Aria for 13 (30/60)
+Aria hits Brute for 12
+Brute takes 4 poison damage - Brute is defeated!
+== Heroes win after the dust settles ==
+  Aria   Warrior  30/60 HP
+  Merlin Mage     31/38 HP
+  Sana   Healer   27/45 HP
+  Grub   Goblin    0/30 HP
+  Snag   Goblin    0/30 HP
+  Brute  Troll     0/80 HP
+  Hex    Shaman    0/35 HP

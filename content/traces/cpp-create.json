@@ -1,0 +1,260 @@
+{
+ "title": "C++: an object on the stack and one on the heap",
+ "lang": "cpp",
+ "code": "#include <iostream>\n#include <string>\n\nclass Dog {\npublic:\n    Dog(std::string name, int age) : name_(name), age_(age) {\n        std::cout << \"constructed \" << name_ << \"\\n\";\n    }\n    std::string bark() const { return name_ + \" says woof\"; }\nprivate:\n    std::string name_;\n    int age_;\n};\n\nint main() {\n    Dog rex(\"Rex\", 3);\n    Dog* pip = new Dog(\"Pip\", 1);\n    std::cout << rex.bark() << \"\\n\";\n    delete pip;\n}\n",
+ "steps": [
+  {
+   "line": 15,
+   "note": "Entering `main` reserves room in its **stack frame** for `rex` (a whole Dog: a string and an int) and for `pip` (just an address). Nothing is initialised yet.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "rex",
+       "id": "rex",
+       "obj": {
+        "label": "Dog (lives in main's frame)",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "?"
+         },
+         {
+          "name": "age_",
+          "value": "?"
+         }
+        ]
+       }
+      },
+      {
+       "name": "pip",
+       "value": "?? (garbage)"
+      }
+     ]
+    }
+   ],
+   "heap": []
+  },
+  {
+   "line": 6,
+   "note": "`Dog rex(\"Rex\", 3);` calls the **constructor** on that stack space. `this` points at rex. The **member initialiser list** `: name_(name), age_(age)` initialises the members before the body runs.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "rex",
+       "id": "rex",
+       "obj": {
+        "label": "Dog (lives in main's frame)",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"Rex\"",
+          "changed": true
+         },
+         {
+          "name": "age_",
+          "value": "3",
+          "changed": true
+         }
+        ]
+       }
+      },
+      {
+       "name": "pip",
+       "value": "?? (garbage)"
+      }
+     ]
+    },
+    {
+     "name": "Dog::Dog",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "rex"
+      },
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ]
+    }
+   ],
+   "heap": [],
+   "out": "constructed Rex"
+  },
+  {
+   "line": 17,
+   "note": "`new Dog(...)` allocates a Dog on the **heap**, runs the constructor there, and returns its **address**. `pip` stores that address (a pointer).",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "rex",
+       "id": "rex",
+       "obj": {
+        "label": "Dog (lives in main's frame)",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"Rex\""
+         },
+         {
+          "name": "age_",
+          "value": "3"
+         }
+        ]
+       }
+      },
+      {
+       "name": "pip",
+       "ref": "h1",
+       "changed": true
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "h1",
+     "label": "Dog (heap)",
+     "fields": [
+      {
+       "name": "name_",
+       "value": "\"Pip\""
+      },
+      {
+       "name": "age_",
+       "value": "1"
+      }
+     ]
+    }
+   ],
+   "out": "constructed Rex\nconstructed Pip"
+  },
+  {
+   "line": 9,
+   "note": "`rex.bark()` - the compiler knows rex is a Dog, so it calls `Dog::bark` directly, passing `&rex` as the hidden `this` parameter.",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "rex",
+       "id": "rex",
+       "obj": {
+        "label": "Dog (lives in main's frame)",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"Rex\""
+         },
+         {
+          "name": "age_",
+          "value": "3"
+         }
+        ]
+       }
+      },
+      {
+       "name": "pip",
+       "ref": "h1"
+      }
+     ]
+    },
+    {
+     "name": "Dog::bark",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "rex"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "h1",
+     "label": "Dog (heap)",
+     "fields": [
+      {
+       "name": "name_",
+       "value": "\"Pip\""
+      },
+      {
+       "name": "age_",
+       "value": "1"
+      }
+     ]
+    }
+   ],
+   "out": "constructed Rex\nconstructed Pip\nRex says woof"
+  },
+  {
+   "line": 19,
+   "note": "`delete pip;` runs the destructor and **frees** the heap memory. `pip` still holds the old address - a **dangling pointer**. Using it now would be undefined behaviour. (Modern C++ uses `std::unique_ptr` so this can't be forgotten.)",
+   "frames": [
+    {
+     "name": "main()",
+     "vars": [
+      {
+       "name": "rex",
+       "id": "rex",
+       "obj": {
+        "label": "Dog (lives in main's frame)",
+        "fields": [
+         {
+          "name": "name_",
+          "value": "\"Rex\""
+         },
+         {
+          "name": "age_",
+          "value": "3"
+         }
+        ]
+       }
+      },
+      {
+       "name": "pip",
+       "ref": "h1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "h1",
+     "label": "Dog (heap)",
+     "fields": [
+      {
+       "name": "name_",
+       "value": "\"Pip\""
+      },
+      {
+       "name": "age_",
+       "value": "1"
+      }
+     ],
+     "freed": true
+    }
+   ],
+   "out": "constructed Rex\nconstructed Pip\nRex says woof"
+  },
+  {
+   "line": 20,
+   "note": "When `main` returns, its frame is popped and **rex is destroyed automatically**. Stack objects need no `delete`. That's the basis of RAII.",
+   "frames": [],
+   "heap": [],
+   "out": "constructed Rex\nconstructed Pip\nRex says woof"
+  }
+ ],
+ "stackLabel": "Stack",
+ "heapLabel": "Heap (new / delete)"
+}

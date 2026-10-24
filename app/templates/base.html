@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-lang="python">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="run-token" content="{{ run_token }}">
+  <title>{% block title %}OOP in Python, C++ & JavaScript{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧱</text></svg>">
+  <script>try { document.documentElement.dataset.lang = localStorage.getItem("oop-lang") || "python"; } catch (e) {}</script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/hljs-light.css') }}" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/hljs-dark.css') }}" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('home') }}">🧱 OOP<span>in 🐍 Python · ⚙️ C++ · 🟨 JS</span></a>
+    <nav class="quick">
+      <a href="{{ url_for('playground') }}">▶ Playground</a>
+      <a href="{{ url_for('class_builder') }}">🏗️ Class builder</a>
+      <a href="{{ url_for('compare') }}">⇄ Compare</a>
+    </nav>
+    <details class="nav" {% if request.path.startswith('/basics') %}open{% endif %}>
+      <summary>① Basics (prerequisites)</summary>
+      <ul>{% for lang, info in LANGS.items() %}<li><a href="{{ url_for('track', lang=lang) }}" class="{{ 'active' if request.path.startswith('/basics/' ~ lang) }}">{{ info.icon }} {{ info.name }} basics <span class="muted">{{ nav_basics[lang]|length }}</span></a></li>{% endfor %}</ul>
+    </details>
+    <details class="nav" open>
+      <summary>② OOP concepts</summary>
+      <ul>{% for c in nav_concepts %}<li><a href="{{ url_for('concept', slug=c.slug) }}" class="{{ 'active' if request.path == url_for('concept', slug=c.slug) }}"><span class="dot" data-done="c:{{ c.slug }}"></span>{{ c.icon }} {{ c.title }}</a></li>{% endfor %}</ul>
+    </details>
+    <details class="nav" open>
+      <summary>③ Projects</summary>
+      <ul>{% for p in nav_projects %}<li><a href="{{ url_for('project', slug=p.slug) }}" class="{{ 'active' if request.path == url_for('project', slug=p.slug) }}"><span class="dot" data-done="p:{{ p.slug }}"></span>{{ p.icon }} {{ p.title }}</a></li>{% endfor %}</ul>
+    </details>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div class="lang-switch" role="group" aria-label="Language">
+        {% for lang, info in LANGS.items() %}<button data-set-lang="{{ lang }}">{{ info.icon }} {{ info.name }}</button>{% endfor %}
+        <button data-set-lang="all" title="Show all three side by side">⇄ All</button>
+      </div>
+    </header>
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script src="{{ url_for('static', filename='vendor/highlight.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/mermaid.min.js') }}"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,10 @@
+connect A
+  using A
+disconnect A
+connect B
+disconnect B
+  error handled - and B was already disconnected
+connect C
+owner empty? true
+copy has 2 players, original has 3
+disconnect C

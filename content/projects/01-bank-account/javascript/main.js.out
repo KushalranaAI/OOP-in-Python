@@ -1,0 +1,16 @@
+rejected: balance 374.50, tried to withdraw 10000.00
+rejected: deposit must be positive
+interest paid: 18.00
+rejected: limit of 3 withdrawals reached
+#1001 Ada (Account)
+  deposit     500.00    500.00
+  withdraw   -125.50    374.50
+  withdraw    -74.50    300.00
+#1002 Bob (SavingsAccount)
+  deposit    1200.00   1200.00
+  interest     18.00   1218.00
+  withdraw    -10.00   1208.00
+  withdraw    -10.00   1198.00
+  withdraw    -10.00   1188.00
+  deposit      74.50   1262.50
+bank total: 1562.50

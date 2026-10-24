@@ -1,0 +1,6 @@
+balance: 100
+can't set: property 'balance' of 'Savings' object has no setter
+rule enforced: deposit must be positive
+subclass peek -> AttributeError: 'Savings' object has no attribute '_Savings__balance'
+mangled name exists: True
+…and can still be reached deliberately: 100

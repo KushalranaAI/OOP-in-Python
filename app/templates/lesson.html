@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} - {{ LANGS[lang].name }}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="{{ url_for('track', lang=lang) }}">{{ LANGS[lang].icon }} {{ LANGS[lang].name }} basics</a> · {{ lesson.order }}</p>
+<h1>{{ lesson.title }}</h1>
+<p class="lead">{{ lesson.summary }}</p>
+<article class="prose" data-code-lang="{{ lang }}">{{ lesson.body | md }}</article>
+<nav class="prevnext">
+  {% if prev %}<a class="card" href="{{ url_for('lesson', lang=lang, slug=prev.slug) }}"><small>← Previous</small>{{ prev.title }}</a>{% else %}<span></span>{% endif %}
+  {% if next %}<a class="card right" href="{{ url_for('lesson', lang=lang, slug=next.slug) }}"><small>Next →</small>{{ next.title }}</a>
+  {% else %}<a class="card right" href="{{ url_for('concept', slug=nav_concepts[0].slug) }}"><small>Done with the basics →</small>Start the OOP concepts</a>{% endif %}
+</nav>
+{% endblock %}

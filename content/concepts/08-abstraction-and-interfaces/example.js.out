@@ -1,0 +1,5 @@
+TypeError: Shape is abstract - extend it
+Error: HalfDone must implement area()
+Square with area 9.00
+  email: order placed: book
+the fake recorded: [ 'order placed: pen' ]

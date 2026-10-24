@@ -1,0 +1,5 @@
+balance: 100
+rule enforced: deposit must be positive
+log entries (via protected): 1
+audit sees private owner_: Ada
+same balance: true

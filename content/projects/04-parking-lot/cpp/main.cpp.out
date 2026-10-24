@@ -1,0 +1,20 @@
+ticket #1: MOTO-1  -> level 1, spot S1
+ticket #2: CAR-1   -> level 1, spot M1
+ticket #3: EV-1    -> level 1, spot C1
+ticket #4: CAR-2   -> level 1, spot M2
+ticket #5: VAN-1   -> level 1, spot L1
+ticket #6: CAR-3   -> level 2, spot M3
+ticket #7: CAR-4   -> level 2, spot L2
+refused: no space for MOTO-2 (small)
+Level 1: S1 MOTO-1 | M1 CAR-1 | M2 CAR-2 | C1 EV-1 | L1 VAN-1
+Level 2: M3 CAR-3 | L2 CAR-4
+MOTO-1 leaves after 50 min, pays 1.00
+CAR-1 leaves after 130 min, pays 6.00
+EV-1 leaves after 10 min, pays 0.00
+-- event pricing: flat 5.00 --
+VAN-1 leaves after 300 min, pays 5.00
+ticket #8: MOTO-2  -> level 1, spot S1
+refused: CAR-2 is already parked
+refused: no ticket for NOPE-0
+Level 1: S1 MOTO-2 | M1 free | M2 CAR-2 | C1 free | L1 free
+Level 2: M3 CAR-3 | L2 CAR-4

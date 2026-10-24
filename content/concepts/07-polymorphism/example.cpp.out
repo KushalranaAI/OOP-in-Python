@@ -1,0 +1,6 @@
+Circle area = 3.14159
+Rectangle area = 6
+total: 9.14159
+virtual via Shape&: Circle | non-virtual via Shape&: shape | via Circle: round shape
+template with Hexagon: 2.59808
+an int: 42 | a string: hi

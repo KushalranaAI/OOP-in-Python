@@ -1,0 +1,555 @@
+{
+ "title": "JavaScript: what `new Dog(\"Rex\", 3)` does",
+ "lang": "javascript",
+ "code": "class Dog {\n  constructor(name, age) {\n    this.name = name;\n    this.age = age;\n  }\n  bark() {\n    return `${this.name} says woof`;\n  }\n}\n\nconst rex = new Dog(\"Rex\", 3);\nconsole.log(rex.bark());\nconsole.log(Object.getPrototypeOf(rex) === Dog.prototype);\n",
+ "steps": [
+  {
+   "line": 1,
+   "note": "A `class` declaration creates a **function** called `Dog` and an object `Dog.prototype` that holds the methods (`bark`). Classes in JS are syntax over functions and prototypes.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "line": 11,
+   "note": "`new` step 1: create a **new empty object**. Step 2: set its hidden **[[Prototype]]** link to `Dog.prototype`.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "value": "<uninitialised>"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    },
+    {
+     "id": "o1",
+     "label": "object",
+     "fields": [],
+     "proto": "DogProto"
+    }
+   ]
+  },
+  {
+   "line": 3,
+   "note": "Step 3: call the constructor with **`this` = the new object**. `this.name = name` creates an *own property* on it.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "value": "<uninitialised>"
+      }
+     ]
+    },
+    {
+     "name": "constructor",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "o1"
+      },
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    },
+    {
+     "id": "o1",
+     "label": "object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\"",
+       "changed": true
+      }
+     ],
+     "proto": "DogProto"
+    }
+   ]
+  },
+  {
+   "line": 4,
+   "note": "Same for `age`. The methods are **not** copied into the object - they stay on the prototype and are shared.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "value": "<uninitialised>"
+      }
+     ]
+    },
+    {
+     "name": "constructor",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "o1"
+      },
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    },
+    {
+     "id": "o1",
+     "label": "object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3",
+       "changed": true
+      }
+     ],
+     "proto": "DogProto"
+    }
+   ]
+  },
+  {
+   "line": 11,
+   "note": "Step 4: `new` returns the object (unless the constructor returns another object). `rex` now refers to it.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "ref": "o1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    },
+    {
+     "id": "o1",
+     "label": "object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ],
+     "proto": "DogProto"
+    }
+   ]
+  },
+  {
+   "line": 7,
+   "note": "`rex.bark()` - `bark` isn't an own property, so JS follows [[Prototype]] to `Dog.prototype` and finds it there. `this` is set to `rex` because of the `rex.` before the call.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "ref": "o1"
+      }
+     ]
+    },
+    {
+     "name": "bark",
+     "vars": [
+      {
+       "name": "this",
+       "ref": "o1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    },
+    {
+     "id": "o1",
+     "label": "object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ],
+     "proto": "DogProto"
+    }
+   ]
+  },
+  {
+   "line": 13,
+   "note": "The prototype link is real and inspectable: `Object.getPrototypeOf(rex) === Dog.prototype` is `true`.",
+   "frames": [
+    {
+     "name": "global scope",
+     "vars": [
+      {
+       "name": "Dog",
+       "ref": "Dog"
+      },
+      {
+       "name": "rex",
+       "ref": "o1"
+      }
+     ]
+    }
+   ],
+   "heap": [
+    {
+     "id": "Dog",
+     "label": "Dog (a function!)",
+     "fields": [
+      {
+       "name": "prototype",
+       "ref": "DogProto"
+      }
+     ],
+     "kind": "class"
+    },
+    {
+     "id": "DogProto",
+     "label": "Dog.prototype",
+     "fields": [
+      {
+       "name": "constructor",
+       "ref": "Dog"
+      },
+      {
+       "name": "bark",
+       "value": "<function>"
+      }
+     ],
+     "proto": "ObjProto"
+    },
+    {
+     "id": "ObjProto",
+     "label": "Object.prototype",
+     "fields": [
+      {
+       "name": "toString",
+       "value": "<function>"
+      },
+      {
+       "name": "…",
+       "value": ""
+      }
+     ]
+    },
+    {
+     "id": "o1",
+     "label": "object",
+     "fields": [
+      {
+       "name": "name",
+       "value": "\"Rex\""
+      },
+      {
+       "name": "age",
+       "value": "3"
+      }
+     ],
+     "proto": "DogProto"
+    }
+   ],
+   "out": "Rex says woof\ntrue"
+  }
+ ],
+ "stackLabel": "Scope (variables)",
+ "heapLabel": "Heap (objects)"
+}
